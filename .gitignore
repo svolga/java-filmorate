@@ -46,3 +46,4 @@ build/
 *.db
 db/*
 /.mvn/
+/.mvn/
