@@ -32,7 +32,7 @@ public class UserService implements Manager<User> {
             users.put(user.getId(), user);
             return users.get(user.getId());
         }
-        throw new ValidateException("Пользователь c id = " + user.getId() +" не существует");
+        throw new ValidateException("Пользователь c id = " + user.getId() + " не существует");
     }
 
     @Override
