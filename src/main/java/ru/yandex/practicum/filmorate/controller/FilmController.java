@@ -9,14 +9,9 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.vaidator.DateIsAfterValidator;
 
 import javax.validation.Valid;
-import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/films")
