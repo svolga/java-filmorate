@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.User;
 
 @Service
@@ -26,12 +27,12 @@ public class UserService implements Manager<User> {
     }
 
     @Override
-    public User update(User user) {
+    public User update(User user) throws ValidateException {
         if (users.containsKey(user.getId())) {
             users.put(user.getId(), user);
             return users.get(user.getId());
         }
-        return null;
+        throw new ValidateException("Пользователь c id = " + user.getId() +" не существует");
     }
 
     @Override

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 @Service
@@ -25,12 +26,12 @@ public class FilmService implements Manager<Film> {
     }
 
     @Override
-    public Film update(Film user) {
-        if (films.containsKey(user.getId())){
-            films.put(user.getId(), user);
-            return films.get(user.getId());
+    public Film update(Film film) throws ValidateException {
+        if (films.containsKey(film.getId())){
+            films.put(film.getId(), film);
+            return films.get(film.getId());
         }
-        return null;
+        throw new ValidateException("Фильм с id = " + film.getId()+" не существует");
     }
 
     @Override
