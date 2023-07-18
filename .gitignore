@@ -15,6 +15,9 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+!mwnw
+!mwnw.cmd
+
 ### STS ###
 .apt_generated
 .classpath
