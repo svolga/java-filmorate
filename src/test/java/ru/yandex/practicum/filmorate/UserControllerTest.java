@@ -74,15 +74,11 @@ class UserControllerTest {
     @Test
     void shouldCheckUserEmptyName() {
 
-        NullPointerException ex = Assertions.assertThrows(
-                NullPointerException.class,
-                () -> User.builder()
-                        .login("demodemo")
-                        .email("mail@mail.ru")
-                        .birthday(LocalDate.parse("1946-08-20", DateTimeFormatter.ofPattern(Const.DATE_FORMAT)))
-                        .build()
-        );
-        assertEquals("name is marked non-null but is null", ex.getMessage());
+        User user = getUserTest();
+        user.setName(null);
+        User user2 = userController.addUser(user);
+
+        assertEquals(user.getLogin(), user2.getName());
     }
 
     @Test
