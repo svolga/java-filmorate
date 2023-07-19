@@ -11,5 +11,5 @@ public interface Manager<T> {
     T update(T t) throws ValidateException;
 
     List<T> getAll();
-    
+
 }
