@@ -7,8 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.validation.annotation.Validated;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.User;
+
+import javax.validation.Valid;
 
 @Slf4j
 @Service
@@ -22,14 +25,14 @@ public class UserService implements Manager<User> {
     }
 
     @Override
-    public User create(User user) {
+    public User create(@Valid User user) {
         user.setId(getNextId());
         users.put(user.getId(), user);
         return users.get(user.getId());
     }
 
     @Override
-    public User update(User user) throws ValidateException {
+    public User update(@Valid User user) throws ValidateException {
         if (users.containsKey(user.getId())) {
             users.put(user.getId(), user);
             return users.get(user.getId());

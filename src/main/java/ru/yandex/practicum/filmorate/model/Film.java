@@ -1,7 +1,11 @@
 package ru.yandex.practicum.filmorate.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NonNull;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.validation.annotation.Validated;
 import ru.yandex.practicum.filmorate.annotation.CustomAfterDate;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -10,10 +14,14 @@ import java.time.LocalDate;
 import ru.yandex.practicum.filmorate.util.Const;
 
 @Data
+@Builder
+@Validated
+@AllArgsConstructor
 public class Film {
 
     private int id;
 
+    @NonNull
     @NotBlank
     private String name;
 
