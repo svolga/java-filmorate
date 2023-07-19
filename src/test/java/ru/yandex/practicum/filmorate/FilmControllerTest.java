@@ -107,6 +107,7 @@ public class FilmControllerTest {
                         .duration(10)
                         .build()
         );
+
         assertEquals("name is marked non-null but is null", ex.getMessage());
     }
 
