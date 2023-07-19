@@ -28,7 +28,6 @@ public class User {
     private String name;
 
     @Past(message = "Дата рождения не может быть в будущем")
-//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Const.DATE_FORMAT)
     @DateTimeFormat(pattern = Const.DATE_FORMAT)
     private LocalDate birthday;
 

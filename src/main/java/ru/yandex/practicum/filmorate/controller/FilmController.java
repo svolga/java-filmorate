@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +15,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
+@Slf4j
 @RequestMapping("/films")
 public class FilmController {
 
@@ -25,16 +27,19 @@ public class FilmController {
 
     @GetMapping
     public List<Film> getAllFilms() {
+        log.info("Получение списка фильмов");
         return filmService.getAll();
     }
 
     @PutMapping
     public Film editFilm(@Valid @RequestBody Film film) throws ValidateException {
+        log.info("Изменить фильм --> {}",  film);
         return filmService.update(film);
     }
 
     @PostMapping
     public Film addFilm(@Valid @RequestBody Film film) {
+        log.info("Создать фильм --> {}",  film);
         return filmService.create(film);
     }
 
