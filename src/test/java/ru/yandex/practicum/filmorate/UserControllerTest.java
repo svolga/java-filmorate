@@ -8,10 +8,12 @@ import ru.yandex.practicum.filmorate.controller.UserController;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.util.Const;
+
 import javax.validation.ConstraintViolationException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -107,7 +109,7 @@ class UserControllerTest {
         assertEquals("addUser.user.birthday: Дата рождения не может быть в будущем", ex.getMessage());
     }
 
-    private User getUserTest(){
+    private User getUserTest() {
         return User.builder()
                 .login("dolore1")
                 .name("Nick Name")
