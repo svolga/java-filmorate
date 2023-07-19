@@ -33,8 +33,6 @@ public class User {
     @NotNull
     private String login;
 
-    @NonNull
-    @NotBlank
     @Setter
     private String name;
 
@@ -43,7 +41,7 @@ public class User {
     private LocalDate birthday;
 
    public String getName() {
-        if (name.isEmpty()) {
+        if (name == null || name.isEmpty()) {
             name = this.login;
         }
         return name;
