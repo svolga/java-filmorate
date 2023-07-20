@@ -33,16 +33,16 @@ public class FilmController {
         return filmService.getAll();
     }
 
-    @PutMapping
-    public Film editFilm(@Valid @RequestBody Film film) throws ValidateException {
-        log.info("Изменить фильм --> {}",  film);
-        return filmService.update(film);
-    }
-
     @PostMapping
-    public Film addFilm(@Valid @RequestBody Film film) {
+    public Film createFilm(@Valid @RequestBody Film film) {
         log.info("Создать фильм --> {}",  film);
         return filmService.create(film);
+    }
+
+    @PutMapping
+    public Film updateFilm(@Valid @RequestBody Film film) throws ValidateException {
+        log.info("Изменить фильм --> {}",  film);
+        return filmService.update(film);
     }
 
 }

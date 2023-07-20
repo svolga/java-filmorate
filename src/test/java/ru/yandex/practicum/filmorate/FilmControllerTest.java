@@ -20,31 +20,26 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest
 public class FilmControllerTest {
 
-    @Autowired
-    FilmController filmController;
+    private final FilmController filmController;
 
-    private Film getTestFilm() {
-        return Film.builder()
-                .name("nisi eiusmod")
-                .description("adipisicing")
-                .releaseDate(LocalDate.parse("1967-03-25", DateTimeFormatter.ofPattern(Const.DATE_FORMAT)))
-                .duration(10)
-                .build();
+    @Autowired
+    public FilmControllerTest(FilmController filmController) {
+        this.filmController = filmController;
     }
 
     @Test
     void createFilm() {
-        Film film = filmController.addFilm(getTestFilm());
+        Film film = filmController.createFilm(getTestFilm());
         assertTrue(film.getId() > 0);
     }
 
     @Test
     void updateFilm() throws ValidateException {
-        Film film = filmController.addFilm(getTestFilm());
+        Film film = filmController.createFilm(getTestFilm());
 
         String newName = "demoname";
         film.setName(newName);
-        film = filmController.editFilm(film);
+        film = filmController.updateFilm(film);
 
         assertEquals(newName, film.getName());
     }
@@ -52,7 +47,7 @@ public class FilmControllerTest {
     @Test
     void shouldGetAllFilms() {
         List<Film> films = filmController.getAllFilms();
-        filmController.addFilm(getTestFilm());
+        filmController.createFilm(getTestFilm());
         List<Film> films2 = filmController.getAllFilms();
         assertEquals(films2.size(), films.size() + 1);
     }
@@ -64,9 +59,9 @@ public class FilmControllerTest {
 
         ConstraintViolationException ex = Assertions.assertThrows(
                 ConstraintViolationException.class,
-                () -> filmController.addFilm(film)
+                () -> filmController.createFilm(film)
         );
-        assertEquals("addFilm.film.duration: Продолжительность фильма должна быть положительной", ex.getMessage());
+        assertEquals("createFilm.film.duration: Продолжительность фильма должна быть положительной", ex.getMessage());
     }
 
     @Test
@@ -77,9 +72,9 @@ public class FilmControllerTest {
 
         ConstraintViolationException ex = Assertions.assertThrows(
                 ConstraintViolationException.class,
-                () -> filmController.addFilm(film)
+                () -> filmController.createFilm(film)
         );
-        assertEquals("addFilm.film.releaseDate: Дата должна быть больше 1895-12-28", ex.getMessage());
+        assertEquals("createFilm.film.releaseDate: Дата должна быть больше 1895-12-28", ex.getMessage());
     }
 
     @Test
@@ -91,9 +86,9 @@ public class FilmControllerTest {
 
         ConstraintViolationException ex = Assertions.assertThrows(
                 ConstraintViolationException.class,
-                () -> filmController.addFilm(film)
+                () -> filmController.createFilm(film)
         );
-        assertEquals("addFilm.film.description: Максимальная длина описания — 200 символов", ex.getMessage());
+        assertEquals("createFilm.film.description: Максимальная длина описания — 200 символов", ex.getMessage());
     }
 
     @Test
@@ -118,10 +113,18 @@ public class FilmControllerTest {
 
         ValidateException ex = Assertions.assertThrows(
                 ValidateException.class,
-                () -> filmController.editFilm(film)
+                () -> filmController.updateFilm(film)
         );
         assertEquals("Фильм с id = 9999 не существует", ex.getMessage());
     }
 
+    private Film getTestFilm() {
+        return Film.builder()
+                .name("nisi eiusmod")
+                .description("adipisicing")
+                .releaseDate(LocalDate.parse("1967-03-25", DateTimeFormatter.ofPattern(Const.DATE_FORMAT)))
+                .duration(10)
+                .build();
+    }
 
 }

@@ -14,7 +14,7 @@ import javax.validation.Valid;
 
 @Slf4j
 @Service
-public class UserService implements Manager<User> {
+public class UserService implements AbstractService<User> {
 
     private final Map<Integer, User> users = new HashMap<>();
     private int id;

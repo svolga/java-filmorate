@@ -12,7 +12,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 
 @Slf4j
 @Service
-public class FilmService implements Manager<Film> {
+public class FilmService implements AbstractService<Film> {
 
     private final Map<Integer, Film> films = new HashMap<>();
     private int id;

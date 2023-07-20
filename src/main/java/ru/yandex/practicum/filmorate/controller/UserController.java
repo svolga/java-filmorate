@@ -34,13 +34,13 @@ public class UserController {
     }
 
     @PostMapping
-    public User addUser(@Valid @RequestBody User user) {
+    public User createUser(@Valid @RequestBody User user) {
         log.info("Создать пользователя --> {}",  user);
         return userService.create(user);
     }
 
     @PutMapping
-    public User editUser(@Valid @RequestBody User user) throws ValidateException {
+    public User updateUser(@Valid @RequestBody User user) throws ValidateException {
         log.info("Изменить пользователя --> {}",  user);
         return userService.update(user);
     }

@@ -20,21 +20,25 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest
 class UserControllerTest {
 
+    private final UserController userController;
+
     @Autowired
-    UserController userController;
+    UserControllerTest(UserController userController) {
+        this.userController = userController;
+    }
 
     @Test
     void createUser() {
-        User user = userController.addUser(getUserTest());
+        User user = userController.createUser(getUserTest());
         assertTrue(user.getId() > 0);
     }
 
     @Test
     void updateUser() throws ValidateException {
-        User user = userController.addUser(getUserTest());
+        User user = userController.createUser(getUserTest());
         String newName = "demoname";
         user.setName(newName);
-        user = userController.editUser(user);
+        user = userController.updateUser(user);
 
         assertEquals(newName, user.getName());
     }
@@ -42,7 +46,7 @@ class UserControllerTest {
     @Test
     void getAllUsers() {
         List<User> users = userController.getAllUsers();
-        userController.addUser(getUserTest());
+        userController.createUser(getUserTest());
 
         List<User> users2 = userController.getAllUsers();
         assertEquals(users2.size(), users.size() + 1);
@@ -55,9 +59,9 @@ class UserControllerTest {
 
         ConstraintViolationException ex = Assertions.assertThrows(
                 ConstraintViolationException.class,
-                () -> userController.addUser(user)
+                () -> userController.createUser(user)
         );
-        assertEquals("addUser.user.email: Электронная почта должна содержать символ @", ex.getMessage());
+        assertEquals("createUser.user.email: Электронная почта должна содержать символ @", ex.getMessage());
     }
 
     @Test
@@ -66,9 +70,9 @@ class UserControllerTest {
         user.setLogin("   ");
         ConstraintViolationException ex = Assertions.assertThrows(
                 ConstraintViolationException.class,
-                () -> userController.addUser(user)
+                () -> userController.createUser(user)
         );
-        assertEquals("addUser.user.login: Логин не может быть пустой", ex.getMessage());
+        assertEquals("createUser.user.login: Логин не может быть пустой", ex.getMessage());
     }
 
     @Test
@@ -76,7 +80,7 @@ class UserControllerTest {
 
         User user = getUserTest();
         user.setName(null);
-        User user2 = userController.addUser(user);
+        User user2 = userController.createUser(user);
 
         assertEquals(user.getLogin(), user2.getName());
     }
@@ -88,7 +92,7 @@ class UserControllerTest {
 
         ValidateException ex = Assertions.assertThrows(
                 ValidateException.class,
-                () -> userController.editUser(user)
+                () -> userController.updateUser(user)
         );
         assertEquals("Пользователь c id = 9999 не существует", ex.getMessage());
     }
@@ -100,9 +104,9 @@ class UserControllerTest {
 
         ConstraintViolationException ex = Assertions.assertThrows(
                 ConstraintViolationException.class,
-                () -> userController.addUser(user)
+                () -> userController.createUser(user)
         );
-        assertEquals("addUser.user.birthday: Дата рождения не может быть в будущем", ex.getMessage());
+        assertEquals("createUser.user.birthday: Дата рождения не может быть в будущем", ex.getMessage());
     }
 
     private User getUserTest() {
