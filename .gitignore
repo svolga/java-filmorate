@@ -10,9 +10,13 @@
 hs_err_pid*
 out/
 target/
+.mvn/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+
+!mwnw
+!mwnw.cmd
 
 ### STS ###
 .apt_generated
@@ -44,3 +48,5 @@ build/
 
 *.db
 db/*
+/.mvn/
+/.mvn/
