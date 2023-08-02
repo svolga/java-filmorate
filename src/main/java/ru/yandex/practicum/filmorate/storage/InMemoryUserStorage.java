@@ -46,7 +46,7 @@ public class InMemoryUserStorage implements AbstractStorage<User> {
                 .filter(longUserEntry -> longUserEntry.getKey() == id)
                 .findFirst()
                 .map(Map.Entry::getValue)
-                .orElseThrow(()->new UserNotFoundException(String.format("User с id = %d не найден", id)));
+                .orElseThrow(() -> new UserNotFoundException(String.format("User с id = %d не найден", id)));
     }
 
 }
