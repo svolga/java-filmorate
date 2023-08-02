@@ -69,11 +69,10 @@ public class UserService {
 
         log.info("friends --> {}", friends);
 
-
         return friends;
     }
 
-    public List<User> findCommonFriends(long id, long otherId){
+    public List<User> findCommonFriends(long id, long otherId) {
 
         User user = findUserById(id);
         User other = findUserById(otherId);
