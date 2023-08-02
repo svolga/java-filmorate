@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.AbstractStorage;
@@ -39,10 +38,7 @@ public class UserService {
     }
 
     public User findUserById(long id) {
-        return userStorage.getAll().stream()
-                .filter(user -> user.getId() == id)
-                .findFirst()
-                .orElseThrow(() -> new UserNotFoundException(String.format("Пользователь с id = %d не найден", id)));
+        return userStorage.findById(id);
     }
 
     public void addFriend(long id, long friendId) {
@@ -62,13 +58,9 @@ public class UserService {
     public List<User> findAllFriends(long id) {
         User user = findUserById(id);
 
-        log.info("id --> {}; user --> {}", id, user);
-
         List<User> friends = user.getFriends().stream()
-                .map(userId -> findUserById(userId))
+                .map(this::findUserById)
                 .collect(Collectors.toList());
-
-        log.info("friends --> {}", friends);
 
         return friends;
     }
@@ -80,7 +72,7 @@ public class UserService {
         Set<Long> retainFriends = new HashSet<>(user.getFriends());
         retainFriends.retainAll(other.getFriends());
         return retainFriends.stream()
-                .map(userId -> findUserById(userId))
+                .map(this::findUserById)
                 .collect(Collectors.toList());
     }
 

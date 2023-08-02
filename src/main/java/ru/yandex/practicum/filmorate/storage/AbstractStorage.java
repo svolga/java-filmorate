@@ -12,4 +12,5 @@ public interface AbstractStorage<T> {
 
     List<T> getAll();
 
+    T findById(long id);
 }

@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Data;
 import lombok.AllArgsConstructor;
@@ -25,6 +26,7 @@ import ru.yandex.practicum.filmorate.util.Const;
 public class Film {
 
     @Singular
+    @JsonIgnore
     private final Set<Long> likes = new HashSet<>();
 
     private long id;
@@ -43,4 +45,8 @@ public class Film {
     @Min(value = 1, message = "Продолжительность фильма должна быть положительной")
     private int duration;
 
+    public int getLikeCount(){
+        return likes.size();
+    }
+    
 }
