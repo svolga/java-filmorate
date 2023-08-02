@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -73,15 +74,12 @@ public class UserService {
     }
 
     public List<User> findCommonFriends(long id, long otherId) {
-
         User user = findUserById(id);
         User other = findUserById(otherId);
 
-        Set<Long> userFriends = user.getFriends();
-        Set<Long> otherFriends = other.getFriends();
-
-        userFriends.retainAll(otherFriends);
-        return userFriends.stream()
+        Set<Long> retainFriends = new HashSet<>(user.getFriends());
+        retainFriends.retainAll(other.getFriends());
+        return retainFriends.stream()
                 .map(userId -> findUserById(userId))
                 .collect(Collectors.toList());
     }
