@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.controller.FilmController;
+import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.util.Const;
@@ -111,11 +112,11 @@ public class FilmControllerTest {
         Film film = getTestFilm();
         film.setId(9999);
 
-        ValidateException ex = Assertions.assertThrows(
-                ValidateException.class,
+        FilmNotFoundException ex = Assertions.assertThrows(
+                FilmNotFoundException.class,
                 () -> filmController.updateFilm(film)
         );
-        assertEquals("Фильм c id = 9999 не существует", ex.getMessage());
+        assertEquals("Фильм с id = 9999 не найден", ex.getMessage());
     }
 
     private Film getTestFilm() {

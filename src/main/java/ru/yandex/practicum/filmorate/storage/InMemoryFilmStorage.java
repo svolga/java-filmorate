@@ -32,7 +32,7 @@ public class InMemoryFilmStorage implements AbstractStorage<Film> {
             films.put(film.getId(), film);
             return films.get(film.getId());
         }
-        throw new FilmNotFoundException(String.format("Фильм с id = %d не найден", id));
+        throw new FilmNotFoundException(String.format("Фильм с id = %d не найден", film.getId()));
     }
 
     @Override
