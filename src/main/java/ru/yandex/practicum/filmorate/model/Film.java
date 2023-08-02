@@ -4,7 +4,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.AllArgsConstructor;
 import lombok.Singular;
-import lombok.Setter;
 import lombok.NonNull;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
