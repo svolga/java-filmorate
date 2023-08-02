@@ -45,7 +45,7 @@ public class Film {
     @Min(value = 1, message = "Продолжительность фильма должна быть положительной")
     private int duration;
 
-    public int getLikeCount(){
+    public int getLikeCount() {
         return likes.size();
     }
 
