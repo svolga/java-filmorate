@@ -2,12 +2,7 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
@@ -35,14 +30,39 @@ public class FilmController {
 
     @PostMapping
     public Film createFilm(@Valid @RequestBody Film film) {
-        log.info("Создать фильм --> {}",  film);
+        log.info("Создать фильм --> {}", film);
         return filmService.create(film);
     }
 
     @PutMapping
     public Film updateFilm(@Valid @RequestBody Film film) throws ValidateException {
-        log.info("Изменить фильм --> {}",  film);
+        log.info("Изменить фильм --> {}", film);
         return filmService.update(film);
     }
+
+    @GetMapping("/{id}")
+    public Film findFilm(@PathVariable long id) {
+        log.info("Поиск фильма с id  --> {}", id);
+        return filmService.findFilmById(id);
+    }
+
+    @PutMapping("/{id}/like/{userId}")
+    public void addLike(@PathVariable long id, @PathVariable long userId) {
+        log.info("Добавить like фильма с id  --> {}, userId --> {}", id, userId);
+        filmService.addLike(id, userId);
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    public void removeLike(@PathVariable long id, @PathVariable long userId) {
+        log.info("Удалить like фильма с id  --> {}, userId --> {}", id, userId);
+        filmService.removeLike(id, userId);
+    }
+
+    @GetMapping("/popular")
+    public List<Film> findAllPopular(@RequestParam(value = "count", defaultValue = "10", required = false) int count) {
+        log.info("Получить {} популярных фильмов", count);
+        return filmService.findAllPopular(count);
+    }
+
 
 }

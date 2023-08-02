@@ -115,7 +115,7 @@ public class FilmControllerTest {
                 ValidateException.class,
                 () -> filmController.updateFilm(film)
         );
-        assertEquals("Фильм с id = 9999 не существует", ex.getMessage());
+        assertEquals("Фильм c id = 9999 не существует", ex.getMessage());
     }
 
     private Film getTestFilm() {

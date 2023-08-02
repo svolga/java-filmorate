@@ -3,42 +3,65 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
+import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.AbstractStorage;
 
 @Slf4j
 @Service
-public class FilmService implements AbstractService<Film> {
+public class FilmService {
 
-    private final Map<Integer, Film> films = new HashMap<>();
-    private int id;
+    private final AbstractStorage<Film> filmStorage;
+    private final UserService userService;
 
-    private int getNextId() {
-        return ++id;
+    public FilmService(AbstractStorage<Film> filmStorage, UserService userService) {
+        this.filmStorage = filmStorage;
+        this.userService = userService;
     }
 
-    @Override
     public Film create(Film film) {
-        film.setId(getNextId());
-        films.put(film.getId(), film);
-        return films.get(film.getId());
+        return filmStorage.create(film);
     }
 
-    @Override
     public Film update(Film film) throws ValidateException {
-        if (films.containsKey(film.getId())) {
-            films.put(film.getId(), film);
-            return films.get(film.getId());
-        }
-        throw new ValidateException("Фильм с id = " + film.getId() + " не существует");
+        return filmStorage.update(film);
     }
 
-    @Override
     public List<Film> getAll() {
-        return List.copyOf(films.values());
+        return filmStorage.getAll();
     }
+
+    public Film findFilmById(long id) {
+        return filmStorage.getAll().stream()
+                .filter(film -> film.getId() == id)
+                .findFirst()
+                .orElseThrow(() -> new FilmNotFoundException(String.format("Фильм с id = %d не найден", id)));
+    }
+
+    public void addLike(long id, long userId) {
+        Film film = findFilmById(id);
+        User user = userService.findUserById(userId);
+        film.getLikes().add(user.getId());
+    }
+
+    public void removeLike(long id, long userId) {
+        Film film = findFilmById(id);
+        User user = userService.findUserById(userId);
+        film.getLikes().remove(user.getId());
+    }
+
+    public List<Film> findAllPopular(long count) {
+        return filmStorage.getAll().stream()
+                .sorted(Comparator.comparingInt(o -> -1 * o.getLikes().size()))
+                .limit(count)
+                .collect(Collectors.toList());
+    }
+
+
 }

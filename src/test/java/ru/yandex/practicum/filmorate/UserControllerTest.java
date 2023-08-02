@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.controller.UserController;
+import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.util.Const;
@@ -90,8 +91,8 @@ class UserControllerTest {
         User user = getUserTest();
         user.setId(9999);
 
-        ValidateException ex = Assertions.assertThrows(
-                ValidateException.class,
+        UserNotFoundException ex = Assertions.assertThrows(
+                UserNotFoundException.class,
                 () -> userController.updateUser(user)
         );
         assertEquals("Пользователь c id = 9999 не существует", ex.getMessage());
