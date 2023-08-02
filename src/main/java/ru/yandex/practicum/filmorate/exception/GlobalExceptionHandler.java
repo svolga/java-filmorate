@@ -13,13 +13,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleFilmNotFoundException (final FilmNotFoundException e){
+    public ErrorResponse handleFilmNotFoundException(final FilmNotFoundException e) {
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleUserNotFoundException (final UserNotFoundException e){
+    public ErrorResponse handleUserNotFoundException(final UserNotFoundException e) {
         return new ErrorResponse(e.getMessage());
     }
 

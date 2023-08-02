@@ -1,6 +1,10 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Singular;
+import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import ru.yandex.practicum.filmorate.util.Const;
@@ -40,7 +44,7 @@ public class User {
     @DateTimeFormat(pattern = Const.DATE_FORMAT)
     private LocalDate birthday;
 
-   public String getName() {
+    public String getName() {
         if (name == null || name.isEmpty()) {
             name = this.login;
         }
