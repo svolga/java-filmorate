@@ -44,7 +44,7 @@ public class InMemoryUserStorage implements AbstractStorage<User> {
     public User findById(long id) {
         User user = users.get(id);
         if (user == null) {
-            new UserNotFoundException(String.format("User с id = %d не найден", id));
+            throw new UserNotFoundException(String.format("User с id = %d не найден", id));
         }
         return user;
     }
