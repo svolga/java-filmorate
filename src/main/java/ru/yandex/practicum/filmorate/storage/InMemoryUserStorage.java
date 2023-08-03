@@ -42,11 +42,11 @@ public class InMemoryUserStorage implements AbstractStorage<User> {
 
     @Override
     public User findById(long id) {
-        return users.entrySet().stream()
-                .filter(longUserEntry -> longUserEntry.getKey() == id)
-                .findFirst()
-                .map(Map.Entry::getValue)
-                .orElseThrow(() -> new UserNotFoundException(String.format("User с id = %d не найден", id)));
+        User user = users.get(id);
+        if (user == null) {
+            new UserNotFoundException(String.format("User с id = %d не найден", id));
+        }
+        return user;
     }
 
 }

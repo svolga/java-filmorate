@@ -42,11 +42,11 @@ public class InMemoryFilmStorage implements AbstractStorage<Film> {
 
     @Override
     public Film findById(long id) {
-        return films.entrySet().stream()
-                .filter(filmEntry -> filmEntry.getKey() == id)
-                .findFirst()
-                .map(Map.Entry::getValue)
-                .orElseThrow(() -> new FilmNotFoundException(String.format("Фильм с id = %d не найден", id)));
+        Film film = films.get(id);
+        if (film == null) {
+            throw new FilmNotFoundException(String.format("Фильм с id = %d не найден", id));
+        }
+        return film;
     }
 
 }
