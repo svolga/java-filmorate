@@ -1,5 +1,11 @@
 package ru.yandex.practicum.filmorate.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Builder;
+import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Singular;
+import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import ru.yandex.practicum.filmorate.util.Const;
@@ -9,12 +15,9 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 
-import lombok.Data;
-import lombok.Builder;
-import lombok.Setter;
-import lombok.AllArgsConstructor;
-
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Builder
@@ -22,7 +25,11 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class User {
 
-    private int id;
+    @Singular
+    @JsonIgnore
+    private final Set<Long> friends = new HashSet<>();
+
+    private long id;
 
     @Email(message = "Электронная почта должна содержать символ @")
     @NotBlank(message = "Электронная почта не может быть пустой")
@@ -39,7 +46,7 @@ public class User {
     @DateTimeFormat(pattern = Const.DATE_FORMAT)
     private LocalDate birthday;
 
-   public String getName() {
+    public String getName() {
         if (name == null || name.isEmpty()) {
             name = this.login;
         }

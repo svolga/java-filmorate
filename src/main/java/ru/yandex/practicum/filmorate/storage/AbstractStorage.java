@@ -1,10 +1,10 @@
-package ru.yandex.practicum.filmorate.service;
+package ru.yandex.practicum.filmorate.storage;
 
 import ru.yandex.practicum.filmorate.exception.ValidateException;
 
 import java.util.List;
 
-public interface AbstractService<T> {
+public interface AbstractStorage<T> {
 
     T create(T t);
 
@@ -12,4 +12,5 @@ public interface AbstractService<T> {
 
     List<T> getAll();
 
+    T findById(long id);
 }

@@ -1,16 +1,22 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Singular;
 import lombok.NonNull;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import ru.yandex.practicum.filmorate.annotation.CustomAfterDate;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import javax.validation.constraints.Min;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
+
 import ru.yandex.practicum.filmorate.util.Const;
 
 @Data
@@ -19,7 +25,11 @@ import ru.yandex.practicum.filmorate.util.Const;
 @AllArgsConstructor
 public class Film {
 
-    private int id;
+    @Singular
+    @JsonIgnore
+    private final Set<Long> likes = new HashSet<>();
+
+    private long id;
 
     @NonNull
     @NotBlank(message = "Заполните name")
@@ -34,5 +44,9 @@ public class Film {
 
     @Min(value = 1, message = "Продолжительность фильма должна быть положительной")
     private int duration;
+
+    public int getLikeCount() {
+        return likes.size();
+    }
 
 }
