@@ -54,6 +54,13 @@ CREATE TABLE "rating" (
   "updated_at" timestamp NOT NULL DEFAULT (now())
 );
 
+CREATE TABLE "like" (
+  "user_id" integer NOT NULL,
+  "film_id" integer NOT NULL,
+  "updated_at" timestamp NOT NULL DEFAULT (now()),
+  PRIMARY KEY ("user_id", "film_id")
+);
+
 ALTER TABLE "user_friend" ADD FOREIGN KEY ("user_id") REFERENCES "user" ("user_id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 ALTER TABLE "user_friend" ADD FOREIGN KEY ("friend_id") REFERENCES "user" ("user_id") ON DELETE CASCADE ON UPDATE NO ACTION;
@@ -63,5 +70,9 @@ ALTER TABLE "film_genre" ADD FOREIGN KEY ("film_id") REFERENCES "film" ("film_id
 ALTER TABLE "film_genre" ADD FOREIGN KEY ("genre_id") REFERENCES "genre" ("genre_id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 ALTER TABLE "film" ADD FOREIGN KEY ("rating_id") REFERENCES "rating" ("rating_id") ON DELETE SET NULL ON UPDATE NO ACTION;
+
+ALTER TABLE "like" ADD FOREIGN KEY ("film_id") REFERENCES "film" ("film_id") ON DELETE CASCADE ON UPDATE NO ACTION;
+
+ALTER TABLE "like" ADD FOREIGN KEY ("user_id") REFERENCES "user" ("user_id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 ```
