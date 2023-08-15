@@ -4,7 +4,7 @@
 ## Диаграмма БД
 https://dbdiagram.io/embed/64da052f02bd1c4a5ebcdea6
 
-<iframe width="560" height="315" src='https://dbdiagram.io/embed/64da052f02bd1c4a5ebcdea6'> </iframe>
+![schema](diagram.jpg)
 
 
 ## Скрипт для БД PostgreeSQL
@@ -78,3 +78,4 @@ ALTER TABLE "like" ADD FOREIGN KEY ("film_id") REFERENCES "film" ("film_id") ON 
 ALTER TABLE "like" ADD FOREIGN KEY ("user_id") REFERENCES "user" ("user_id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 ```
+
