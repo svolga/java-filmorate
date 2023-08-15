@@ -65,6 +65,3 @@ ALTER TABLE "film_genre" ADD FOREIGN KEY ("genre_id") REFERENCES "genre" ("genre
 ALTER TABLE "film" ADD FOREIGN KEY ("rating_id") REFERENCES "rating" ("rating_id") ON DELETE SET NULL ON UPDATE NO ACTION;
 
 ```
-
-
-
