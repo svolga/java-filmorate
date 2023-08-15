@@ -67,4 +67,3 @@ ALTER TABLE "film" ADD FOREIGN KEY ("rating_id") REFERENCES "rating" ("rating_id
 
 
 
-
