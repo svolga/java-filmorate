@@ -5,7 +5,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.FilmDbService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -16,52 +16,52 @@ import java.util.List;
 @RequestMapping("/films")
 public class FilmController {
 
-    private final FilmService filmService;
+    private final FilmDbService filmDbService;
 
-    public FilmController(FilmService filmService) {
-        this.filmService = filmService;
+    public FilmController(FilmDbService filmDbService) {
+        this.filmDbService = filmDbService;
     }
 
     @GetMapping
     public List<Film> getAllFilms() {
         log.info("Получение списка фильмов");
-        return filmService.getAll();
+        return filmDbService.getAll();
     }
 
     @PostMapping
     public Film createFilm(@Valid @RequestBody Film film) {
         log.info("Создать фильм --> {}", film);
-        return filmService.create(film);
+        return filmDbService.create(film);
     }
 
     @PutMapping
     public Film updateFilm(@Valid @RequestBody Film film) throws ValidateException {
         log.info("Изменить фильм --> {}", film);
-        return filmService.update(film);
+        return filmDbService.update(film);
     }
 
     @GetMapping("/{id}")
     public Film findFilm(@PathVariable long id) {
         log.info("Поиск фильма с id  --> {}", id);
-        return filmService.findFilmById(id);
+        return filmDbService.findFilmById(id);
     }
 
     @PutMapping("/{id}/like/{userId}")
     public void addLike(@PathVariable long id, @PathVariable long userId) {
         log.info("Добавить like фильма с id  --> {}, userId --> {}", id, userId);
-        filmService.addLike(id, userId);
+        filmDbService.addLike(id, userId);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
     public void removeLike(@PathVariable long id, @PathVariable long userId) {
         log.info("Удалить like фильма с id  --> {}, userId --> {}", id, userId);
-        filmService.removeLike(id, userId);
+        filmDbService.removeLike(id, userId);
     }
 
     @GetMapping("/popular")
     public List<Film> findAllPopular(@RequestParam(value = "count", defaultValue = "10", required = false) int count) {
         log.info("Получить {} популярных фильмов", count);
-        return filmService.findAllPopular(count);
+        return filmDbService.findAllPopular(count);
     }
 
 

@@ -79,3 +79,18 @@ ALTER TABLE "like" ADD FOREIGN KEY ("user_id") REFERENCES "user" ("user_id") ON 
 
 ```
 
+## Примеры скориптов
+
+### Скрипт друзей
+```java
+SELECT f.login,
+	f.name,
+	f.email,
+	f.birthday
+FROM user_friend uf
+LEFT JOIN "user" f ON uf.friend_id = f.user_id
+LEFT JOIN "user" u ON uf.user_id = u.user_id
+WHERE u.login = 'ivan'
+```
+
+
