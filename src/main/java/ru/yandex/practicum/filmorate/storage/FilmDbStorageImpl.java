@@ -80,12 +80,12 @@ public class FilmDbStorageImpl implements FilmDbStorage {
         return findById(film.getId());
     }
 
-    private int removeFilmGenre(Film film){
+    private int removeFilmGenre(Film film) {
         String sqlQuery = "DELETE FROM film_genre WHERE film_id = ?";
         return jdbcTemplate.update(sqlQuery, film.getId());
     }
 
-    private void createFilmGenre(Film film){
+    private void createFilmGenre(Film film) {
 
         List<Genre> genres = film.getGenres();
         String sqlQuery = "INSERT INTO film_genre (film_id, genre_id) VALUES (?, ?)";
@@ -128,7 +128,7 @@ public class FilmDbStorageImpl implements FilmDbStorage {
         }
     }
 
-    private void getOtherLinks(Film film){
+    private void getOtherLinks(Film film) {
         List<Genre> genres = genreDbStorageImpl.findByFilm(film.getId());
         List<Long> userIds = findLikedUsersByFilm(film.getId());
         film.getLikes().addAll(userIds);
@@ -176,7 +176,7 @@ public class FilmDbStorageImpl implements FilmDbStorage {
     @Override
     public List<Film> findAllPopular(int count) {
 
-        log.info("count --> {}", count );
+        log.info("count --> {}", count);
 
         String sqlQuery = "SELECT f.*, m.name AS mpa_name " +
                 "FROM (SELECT film_id, COUNT(l.*) AS cnt " +
