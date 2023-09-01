@@ -65,14 +65,14 @@ public class FilmDbStorageImpl implements FilmDbStorage {
             throw new FilmNotFoundException("Фильм c id = " + film.getId() + " не существует");
         }
 
-        Integer mpa_id = film.getMpa() == null ? null : film.getMpa().getId();
+        Integer mpaId = film.getMpa() == null ? null : film.getMpa().getId();
 
         String sqlQuery = "UPDATE film " +
                 "SET name = ?, release_date = ?, description = ?, duration = ?, rate = ?, mpa_id = ? " +
                 "WHERE film_id = ?";
 
         jdbcTemplate.update(sqlQuery, film.getName(), Date.valueOf(film.getReleaseDate()), film.getDescription(),
-                film.getDuration(), film.getRate(), mpa_id, film.getId());
+                film.getDuration(), film.getRate(), mpaId, film.getId());
 
         removeFilmGenre(film);
         createFilmGenre(film);
