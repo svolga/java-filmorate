@@ -8,7 +8,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -124,7 +123,7 @@ public class FilmDbStorageImpl implements FilmDbStorage {
             getOtherLinks(film);
             return film;
         } catch (EmptyResultDataAccessException e) {
-            throw new UserNotFoundException(String.format("Фильм с id = %d не найден", id));
+            throw new FilmNotFoundException(String.format("Фильм с id = %d не найден", id));
         }
     }
 

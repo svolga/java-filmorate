@@ -1,8 +1,10 @@
 package ru.yandex.practicum.filmorate;
 
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.controller.UserController;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
@@ -19,14 +21,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
+@AutoConfigureTestDatabase
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 class UserControllerTest {
 
     private final UserController userController;
-
-    @Autowired
-    UserControllerTest(UserController userController) {
-        this.userController = userController;
-    }
 
     @Test
     void createUser() {
@@ -95,7 +94,7 @@ class UserControllerTest {
                 UserNotFoundException.class,
                 () -> userController.updateUser(user)
         );
-        assertEquals("Пользователь c id = 9999 не существует", ex.getMessage());
+        assertEquals("User с id = 9999 не найден", ex.getMessage());
     }
 
     @Test
