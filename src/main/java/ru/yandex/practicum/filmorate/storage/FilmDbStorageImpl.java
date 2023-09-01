@@ -189,12 +189,16 @@ public class FilmDbStorageImpl implements FilmDbStorage {
         List<Film> films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, count);
         log.info("after query ");
 
-        return films.stream()
+        films = films.stream()
                 .map(film -> {
                     getOtherLinks(film);
                     return film;
                 })
                 .collect(Collectors.toList());
+
+        log.info("Список популярных фильмов --> {0}", films);
+
+        return films;
 
     }
 }
