@@ -7,10 +7,7 @@ import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmDbStorage;
-
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -54,12 +51,6 @@ public class FilmDbService {
     }
 
     public List<Film> findAllPopular(int count) {
-/*
-        return filmDbStorage.getAll().stream()
-                .sorted(Comparator.comparing(Film::getLikeCount).reversed())
-                .limit(count)
-                .collect(Collectors.toList());
- */
         return filmDbStorage.findAllPopular(count);
     }
 
