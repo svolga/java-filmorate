@@ -56,8 +56,8 @@ public class Film {
         return likes.size();
     }
 
-    public void setMpaRating(int mpa_id){
-        mpa.setId(mpa_id);
+    public void setMpaRating(int mpaId){
+        mpa.setId(mpaId);
     }
 
 }
