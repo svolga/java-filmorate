@@ -196,7 +196,7 @@ public class FilmDbStorageImpl implements FilmDbStorage {
                 })
                 .collect(Collectors.toList());
 
-        log.info("Список популярных фильмов --> {0}", films);
+        log.info("Список популярных фильмов --> {}", films);
 
         return films;
 
