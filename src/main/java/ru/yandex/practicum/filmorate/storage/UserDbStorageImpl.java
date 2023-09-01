@@ -108,13 +108,6 @@ public class UserDbStorageImpl implements UserDbStorage {
 
     @Override
     public List<User> findCommonFriends(Long id, Long friendId) {
-/*
-        String sqlQuery = "SELECT * FROM `user` " +
-                "WHERE user_id IN " +
-                "(SELECT friend_id FROM user_friend WHERE user_id = ? " +
-                "AND friend_id IN ( SELECT friend_id FROM user_friend WHERE user_id = ?))";
-*/
-
         String sqlQuery = "SELECT * FROM `user` " +
                 "WHERE user_id IN" +
                 " ( SELECT friend_id FROM user_friend WHERE user_id = ? " +

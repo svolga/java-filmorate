@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.GenreDbService;
 
 import java.util.List;
@@ -34,5 +33,4 @@ public class GenreController {
     public Genre findGenre(@PathVariable long id) {
         return genreDbService.findById(id);
     }
-
 }

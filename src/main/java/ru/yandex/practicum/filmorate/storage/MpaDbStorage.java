@@ -5,7 +5,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.GenreNotFoundException;
-import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.sql.ResultSet;
@@ -14,7 +13,7 @@ import java.util.List;
 
 @Repository
 @Qualifier("mpaDbStorage")
-public class MpaDbStorage implements AbstractStorageGetter <Mpa> {
+public class MpaDbStorage implements AbstractStorageGetter<Mpa> {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -22,7 +21,7 @@ public class MpaDbStorage implements AbstractStorageGetter <Mpa> {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private String getTableName(){
+    private String getTableName() {
         return "rating";
     }
 
@@ -34,7 +33,7 @@ public class MpaDbStorage implements AbstractStorageGetter <Mpa> {
 
     @Override
     public Mpa findById(long id) {
-        String sqlQuery = "select * from "+this.getTableName()+" where mpa_id = ?";
+        String sqlQuery = "select * from " + this.getTableName() + " where mpa_id = ?";
 
         try {
             return jdbcTemplate.queryForObject(sqlQuery, this::mapRowToMpa, id);
@@ -42,8 +41,6 @@ public class MpaDbStorage implements AbstractStorageGetter <Mpa> {
             throw new GenreNotFoundException(String.format("Рейтинг с id = %d не найден", id));
         }
     }
-
-
 
     private Mpa mapRowToMpa(ResultSet rs, int rowNum) throws SQLException {
         return Mpa.builder()
