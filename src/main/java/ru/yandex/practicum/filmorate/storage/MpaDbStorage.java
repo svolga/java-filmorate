@@ -21,19 +21,15 @@ public class MpaDbStorage implements AbstractStorageGetter<Mpa> {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private String getTableName() {
-        return "rating";
-    }
-
     @Override
     public List<Mpa> getAll() {
-        String sqlQuery = "select * from " + getTableName();
+        String sqlQuery = "SELECT * FROM mpa";
         return jdbcTemplate.query(sqlQuery, this::mapRowToMpa);
     }
 
     @Override
     public Mpa findById(long id) {
-        String sqlQuery = "select * from " + this.getTableName() + " where mpa_id = ?";
+        String sqlQuery = "SELECT * FROM mpa WHERE mpa_id = ?";
 
         try {
             return jdbcTemplate.queryForObject(sqlQuery, this::mapRowToMpa, id);

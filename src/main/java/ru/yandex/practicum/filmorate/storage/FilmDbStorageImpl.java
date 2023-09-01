@@ -19,6 +19,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Types;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -73,7 +74,6 @@ public class FilmDbStorageImpl implements FilmDbStorage {
         jdbcTemplate.update(sqlQuery, film.getName(), Date.valueOf(film.getReleaseDate()), film.getDescription(),
                 film.getDuration(), film.getRate(), mpaId, film.getId());
 
-        removeFilmGenre(film);
         createFilmGenre(film);
 
         return findById(film.getId());
@@ -86,11 +86,18 @@ public class FilmDbStorageImpl implements FilmDbStorage {
 
     private void createFilmGenre(Film film) {
 
-        List<Genre> genres = film.getGenres();
-        String sqlQuery = "INSERT INTO film_genre (film_id, genre_id) VALUES (?, ?)";
+        removeFilmGenre(film);
 
-        for (Genre genre : genres) {
-            jdbcTemplate.update(sqlQuery, film.getId(), genre.getId());
+        List<Genre> genres = film.getGenres();
+        if (genres != null) {
+            String sqlQuery = "INSERT INTO film_genre (film_id, genre_id) VALUES (?, ?)";
+            Set<Integer> genreIds = genres.stream()
+                    .map(genre -> genre.getId())
+                    .collect(Collectors.toSet());
+
+            for (Integer genreId : genreIds) {
+                jdbcTemplate.update(sqlQuery, film.getId(), genreId);
+            }
         }
 
     }
@@ -177,17 +184,15 @@ public class FilmDbStorageImpl implements FilmDbStorage {
 
         log.info("count --> {}", count);
 
-        String sqlQuery = "SELECT f.*, m.name AS mpa_name " +
-                "FROM (SELECT film_id, COUNT(l.*) AS cnt " +
-                "FROM `like` l " +
-                "GROUP BY (film_id) " +
-                "ORDER BY cnt DESC LIMIT ? ) vs " +
-                "LEFT JOIN film f ON f.film_id = vs.film_id " +
-                "LEFT JOIN mpa m ON f.mpa_id = m.mpa_id ";
+        String sqlQuery = "SELECT vs.cnt, m.name AS mpa_name, f.* FROM film f " +
+                "LEFT JOIN  (SELECT film_id, COUNT(l.*) AS cnt FROM `like` l " +
+                "GROUP BY (film_id) ) vs " +
+                "ON vs.film_id = f.film_id " +
+                "LEFT JOIN mpa m ON f.mpa_id = m.mpa_id " +
+                "ORDER BY vs.cnt DESC " +
+                "LIMIT ?";
 
-        log.info("before query ");
         List<Film> films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, count);
-        log.info("after query ");
 
         films = films.stream()
                 .map(film -> {
@@ -196,9 +201,6 @@ public class FilmDbStorageImpl implements FilmDbStorage {
                 })
                 .collect(Collectors.toList());
 
-        log.info("Список популярных фильмов --> {}", films);
-
         return films;
-
     }
 }
