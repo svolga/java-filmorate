@@ -53,15 +53,14 @@ public class FilmDbService {
         filmDbStorage.removeLike(id, userId);
     }
 
-    public List<Film> findAllPopular(long count) {
+    public List<Film> findAllPopular(int count) {
 /*
         return filmDbStorage.getAll().stream()
                 .sorted(Comparator.comparing(Film::getLikeCount).reversed())
                 .limit(count)
                 .collect(Collectors.toList());
  */
-        return null;
-//        return filmDbStorage.findAllPopular(count);
+        return filmDbStorage.findAllPopular(count);
     }
 
 }
