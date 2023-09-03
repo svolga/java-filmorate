@@ -4,7 +4,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class LikeDbStorageImpl implements LikeDbStorage <Long, Long> {
+public class LikeDbStorageImpl implements LikeDbStorage<Long, Long> {
 
     private final JdbcTemplate jdbcTemplate;
 
