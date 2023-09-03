@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.FriendDbStorage;
 import ru.yandex.practicum.filmorate.storage.UserDbStorage;
 import ru.yandex.practicum.filmorate.storage.UserDbStorageImpl;
 
@@ -18,8 +19,11 @@ public class UserDbService {
     @Qualifier("userDbStorageImpl")
     private final UserDbStorage userDbStorage;
 
-    public UserDbService(UserDbStorageImpl userDbStorageImpl) {
+    private final FriendDbStorage friendDbStorage;
+
+    public UserDbService(UserDbStorageImpl userDbStorageImpl, FriendDbStorage friendDbStorage) {
         this.userDbStorage = userDbStorageImpl;
+        this.friendDbStorage = friendDbStorage;
     }
 
     public User create(@Valid User user) {
@@ -41,13 +45,13 @@ public class UserDbService {
     public void addFriend(long id, long friendId) {
         User user = findUserById(id);
         User friend = findUserById(friendId);
-        userDbStorage.createFriend(id, friendId);
+        friendDbStorage.createFriend(id, friendId);
     }
 
     public void removeFriend(long id, long friendId) {
         User user = findUserById(id);
         User friend = findUserById(friendId);
-        userDbStorage.removeFriend(id, friendId);
+        friendDbStorage.removeFriend(id, friendId);
     }
 
     public List<User> findAllFriends(long id) {

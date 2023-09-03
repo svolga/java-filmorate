@@ -13,23 +13,23 @@ import java.util.List;
 
 @Repository
 @Qualifier("mpaDbStorage")
-public class MpaDbStorage implements AbstractStorageGetter<Mpa> {
+public class MpaDbStorageImpl implements AbstractStorageGetter<Mpa> {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public MpaDbStorage(JdbcTemplate jdbcTemplate) {
+    public MpaDbStorageImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
     public List<Mpa> getAll() {
-        String sqlQuery = "SELECT * FROM mpa";
+        String sqlQuery = "SELECT * FROM mpas";
         return jdbcTemplate.query(sqlQuery, this::mapRowToMpa);
     }
 
     @Override
     public Mpa findById(long id) {
-        String sqlQuery = "SELECT * FROM mpa WHERE mpa_id = ?";
+        String sqlQuery = "SELECT * FROM mpas WHERE mpa_id = ?";
 
         try {
             return jdbcTemplate.queryForObject(sqlQuery, this::mapRowToMpa, id);

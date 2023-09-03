@@ -19,7 +19,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Types;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -28,17 +27,19 @@ import java.util.stream.Collectors;
 public class FilmDbStorageImpl implements FilmDbStorage {
 
     private final JdbcTemplate jdbcTemplate;
-    private final GenreDbStorageImpl genreDbStorageImpl;
+    private final GenreDbStorage genreDbStorage;
+    private final LikeDbStorage<Long, Long> likeDbStorage;
 
-    public FilmDbStorageImpl(JdbcTemplate jdbcTemplate, GenreDbStorageImpl genreDbStorageImpl) {
+    public FilmDbStorageImpl(JdbcTemplate jdbcTemplate, GenreDbStorage genreDbStorage, LikeDbStorage<Long, Long> likeDbStorage) {
         this.jdbcTemplate = jdbcTemplate;
-        this.genreDbStorageImpl = genreDbStorageImpl;
+        this.genreDbStorage = genreDbStorage;
+        this.likeDbStorage = likeDbStorage;
     }
 
     @Override
     public Film create(Film film) {
 
-        String sqlQuery = "INSERT INTO film (name, description, release_date, duration, mpa_id) " +
+        String sqlQuery = "INSERT INTO films (name, description, release_date, duration, mpa_id) " +
                 "VALUES (?, ?, ?, ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -54,7 +55,7 @@ public class FilmDbStorageImpl implements FilmDbStorage {
         }, keyHolder);
 
         film.setId(keyHolder.getKey().longValue());
-        createFilmGenre(film);
+        genreDbStorage.createFilmGenre(film);
 
         return findById(film.getId());
     }
@@ -65,48 +66,25 @@ public class FilmDbStorageImpl implements FilmDbStorage {
             throw new FilmNotFoundException("Фильм c id = " + film.getId() + " не существует");
         }
 
-        Integer mpaId = film.getMpa() == null ? null : film.getMpa().getId();
+        int mpaId = film.getMpa() == null ? null : film.getMpa().getId();
 
-        String sqlQuery = "UPDATE film " +
+        String sqlQuery = "UPDATE films " +
                 "SET name = ?, release_date = ?, description = ?, duration = ?, rate = ?, mpa_id = ? " +
                 "WHERE film_id = ?";
 
         jdbcTemplate.update(sqlQuery, film.getName(), Date.valueOf(film.getReleaseDate()), film.getDescription(),
                 film.getDuration(), film.getRate(), mpaId, film.getId());
 
-        createFilmGenre(film);
+        genreDbStorage.createFilmGenre(film);
 
         return findById(film.getId());
-    }
-
-    private int removeFilmGenre(Film film) {
-        String sqlQuery = "DELETE FROM film_genre WHERE film_id = ?";
-        return jdbcTemplate.update(sqlQuery, film.getId());
-    }
-
-    private void createFilmGenre(Film film) {
-
-        removeFilmGenre(film);
-
-        List<Genre> genres = film.getGenres();
-        if (genres != null) {
-            String sqlQuery = "INSERT INTO film_genre (film_id, genre_id) VALUES (?, ?)";
-            Set<Integer> genreIds = genres.stream()
-                    .map(genre -> genre.getId())
-                    .collect(Collectors.toSet());
-
-            for (Integer genreId : genreIds) {
-                jdbcTemplate.update(sqlQuery, film.getId(), genreId);
-            }
-        }
-
     }
 
     @Override
     public List<Film> getAll() {
         String sqlQuery = "SELECT f.*, m.name AS mpa_name " +
-                "FROM film f " +
-                "LEFT JOIN mpa m ON f.mpa_id = m.mpa_id";
+                "FROM films f " +
+                "LEFT JOIN mpas m ON f.mpa_id = m.mpa_id";
 
         List<Film> films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm);
 
@@ -121,8 +99,8 @@ public class FilmDbStorageImpl implements FilmDbStorage {
     @Override
     public Film findById(long id) {
         String sqlQuery = "SELECT f.*, m.name AS mpa_name " +
-                "FROM film f " +
-                "LEFT JOIN mpa m ON f.mpa_id = m.mpa_id " +
+                "FROM films f " +
+                "LEFT JOIN mpas m ON f.mpa_id = m.mpa_id " +
                 "WHERE f.film_id = ?";
 
         try {
@@ -135,35 +113,14 @@ public class FilmDbStorageImpl implements FilmDbStorage {
     }
 
     private void getOtherLinks(Film film) {
-        List<Genre> genres = genreDbStorageImpl.findByFilm(film.getId());
+        List<Genre> genres = genreDbStorage.findByFilm(film.getId());
         List<Long> userIds = findLikedUsersByFilm(film.getId());
         film.getLikes().addAll(userIds);
         film.getGenres().addAll(genres);
     }
 
-    @Override
-    public boolean addLike(Long filmId, Long userId) {
-        if (!isExistsLike(filmId, userId)) {
-            String sqlQuery = "INSERT INTO `like` (film_id, user_id) values (?, ?)";
-            return jdbcTemplate.update(sqlQuery, filmId, userId) > 0;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean removeLike(Long filmId, Long userId) {
-        String sqlQuery = "DELETE FROM `like` WHERE film_id = ? AND user_id = ?";
-        return jdbcTemplate.update(sqlQuery, filmId, userId) > 0;
-    }
-
-    @Override
-    public boolean isExistsLike(Long filmId, Long userId) {
-        String sqlQuery = "SELECT EXISTS(SELECT * FROM `like` WHERE film_id = ? AND user_id = ?)";
-        return jdbcTemplate.queryForObject(sqlQuery, Boolean.class, filmId, userId);
-    }
-
     private List<Long> findLikedUsersByFilm(long filmId) {
-        String sqlQuery = "SELECT user_id FROM `like` WHERE film_id = ?";
+        String sqlQuery = "SELECT user_id FROM likes WHERE film_id = ?";
         return jdbcTemplate.queryForList(sqlQuery, Long.class, filmId);
     }
 
@@ -184,11 +141,11 @@ public class FilmDbStorageImpl implements FilmDbStorage {
 
         log.info("count --> {}", count);
 
-        String sqlQuery = "SELECT vs.cnt, m.name AS mpa_name, f.* FROM film f " +
-                "LEFT JOIN  (SELECT film_id, COUNT(l.*) AS cnt FROM `like` l " +
+        String sqlQuery = "SELECT vs.cnt, m.name AS mpa_name, f.* FROM films f " +
+                "LEFT JOIN  (SELECT film_id, COUNT(l.*) AS cnt FROM likes l " +
                 "GROUP BY (film_id) ) vs " +
                 "ON vs.film_id = f.film_id " +
-                "LEFT JOIN mpa m ON f.mpa_id = m.mpa_id " +
+                "LEFT JOIN mpas m ON f.mpa_id = m.mpa_id " +
                 "ORDER BY vs.cnt DESC " +
                 "LIMIT ?";
 

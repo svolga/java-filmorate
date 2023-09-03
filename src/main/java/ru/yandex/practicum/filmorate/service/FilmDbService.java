@@ -7,6 +7,9 @@ import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmDbStorage;
+import ru.yandex.practicum.filmorate.storage.LikeDbStorage;
+import ru.yandex.practicum.filmorate.storage.UserDbStorage;
+
 import java.util.List;
 
 @Slf4j
@@ -15,11 +18,13 @@ public class FilmDbService {
 
     private final FilmDbStorage filmDbStorage;
 
-    private final UserDbService userDbService;
+    private final UserDbStorage userDbStorage;
+    private final LikeDbStorage<Long, Long> likeDbStorage;
 
-    public FilmDbService(@Qualifier("filmDbStorageImpl") FilmDbStorage filmDbStorage, UserDbService userDbService) {
+    public FilmDbService(@Qualifier("filmDbStorageImpl") FilmDbStorage filmDbStorage, UserDbStorage userDbStorage, LikeDbStorage<Long, Long> likeDbStorage) {
         this.filmDbStorage = filmDbStorage;
-        this.userDbService = userDbService;
+        this.userDbStorage = userDbStorage;
+        this.likeDbStorage = likeDbStorage;
     }
 
     public Film create(Film film) {
@@ -40,14 +45,14 @@ public class FilmDbService {
 
     public void addLike(long id, long userId) {
         Film film = findFilmById(id);
-        User user = userDbService.findUserById(userId);
-        filmDbStorage.addLike(id, userId);
+        User user = userDbStorage.findById(userId);
+        likeDbStorage.addLike(id, userId);
     }
 
     public void removeLike(long id, long userId) {
         Film film = findFilmById(id);
-        User user = userDbService.findUserById(userId);
-        filmDbStorage.removeLike(id, userId);
+        User user = userDbStorage.findById(userId);
+        likeDbStorage.removeLike(id, userId);
     }
 
     public List<Film> findAllPopular(int count) {

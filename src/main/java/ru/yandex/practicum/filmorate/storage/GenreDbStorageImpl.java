@@ -5,11 +5,14 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.GenreNotFoundException;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Repository
 @Qualifier("genreDbStorage")
@@ -23,14 +26,14 @@ public class GenreDbStorageImpl implements GenreDbStorage {
 
     @Override
     public List<Genre> getAll() {
-        String sqlQuery = "SELECT * FROM genre";
+        String sqlQuery = "SELECT * FROM genres";
         return jdbcTemplate.query(sqlQuery, this::mapRowToGenre);
     }
 
     @Override
     public Genre findById(long id) {
         String sqlQuery = "SELECT * " +
-                "FROM genre " +
+                "FROM genres " +
                 "WHERE genre_id = ?";
 
         try {
@@ -43,11 +46,34 @@ public class GenreDbStorageImpl implements GenreDbStorage {
     @Override
     public List<Genre> findByFilm(long filmId) {
         String sqlQuery = "SELECT g.* " +
-                "FROM film_genre fg " +
-                "LEFT JOIN genre g ON fg.genre_id = g.genre_id " +
+                "FROM film_genres fg " +
+                "LEFT JOIN genres g ON fg.genre_id = g.genre_id " +
                 "WHERE film_id = ?";
 
         return jdbcTemplate.query(sqlQuery, this::mapRowToGenre, filmId);
+    }
+
+    @Override
+    public void createFilmGenre(Film film) {
+        removeFilmGenre(film);
+
+        List<Genre> genres = film.getGenres();
+        if (genres != null) {
+            String sqlQuery = "INSERT INTO film_genres (film_id, genre_id) VALUES (?, ?)";
+            Set<Integer> genreIds = genres.stream()
+                    .map(genre -> genre.getId())
+                    .collect(Collectors.toSet());
+
+            for (Integer genreId : genreIds) {
+                jdbcTemplate.update(sqlQuery, film.getId(), genreId);
+            }
+        }
+    }
+
+    @Override
+    public int removeFilmGenre(Film film) {
+        String sqlQuery = "DELETE FROM film_genres WHERE film_id = ?";
+        return jdbcTemplate.update(sqlQuery, film.getId());
     }
 
     private Genre mapRowToGenre(ResultSet rs, int rowNum) throws SQLException {

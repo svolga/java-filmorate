@@ -21,18 +21,17 @@ import java.util.List;
 public class UserDbStorageImpl implements UserDbStorage {
 
     private final JdbcTemplate jdbcTemplate;
+    private final FriendDbStorage friendDbStorage;
 
-    public UserDbStorageImpl(JdbcTemplate jdbcTemplate) {
+    public UserDbStorageImpl(JdbcTemplate jdbcTemplate, FriendDbStorage friendDbStorage) {
         this.jdbcTemplate = jdbcTemplate;
+        this.friendDbStorage = friendDbStorage;
     }
 
-    private String getTableName() {
-        return "`user`";
-    }
 
     @Override
     public User create(User user) {
-        String sqlQuery = "INSERT INTO " + this.getTableName() + " (`login`, `name`, `email`, `birthday`) VALUES (?, ?, ?, ?)";
+        String sqlQuery = "INSERT INTO users (`login`, `name`, `email`, `birthday`) VALUES (?, ?, ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -56,20 +55,20 @@ public class UserDbStorageImpl implements UserDbStorage {
             throw new UserNotFoundException("Пользователь c id = " + user.getId() + " не существует");
         }
 
-        String sqlQuery = "UPDATE " + this.getTableName() + " SET login = ? , name = ?, email = ?, birthday = ? WHERE user_id = ?";
+        String sqlQuery = "UPDATE users SET login = ? , name = ?, email = ?, birthday = ? WHERE user_id = ?";
         jdbcTemplate.update(sqlQuery, user.getLogin(), user.getName(), user.getEmail(), Date.valueOf(user.getBirthday()), user.getId());
         return findById(user.getId());
     }
 
     @Override
     public List<User> getAll() {
-        String sqlQuery = "SELECT * FROM " + this.getTableName();
+        String sqlQuery = "SELECT * FROM users";
         return jdbcTemplate.query(sqlQuery, this::mapRowToUser);
     }
 
     @Override
     public User findById(long id) {
-        String sqlQuery = "SELECT * FROM " + this.getTableName() + " WHERE user_id = ?";
+        String sqlQuery = "SELECT * FROM users WHERE user_id = ?";
 
         try {
             return jdbcTemplate.queryForObject(sqlQuery, this::mapRowToUser, id);
@@ -79,39 +78,18 @@ public class UserDbStorageImpl implements UserDbStorage {
     }
 
     @Override
-    public boolean createFriend(Long id, Long friendId) {
-        if (!isHasFriend(id, friendId)) {
-            String sqlQuery = "INSERT INTO user_friend (user_id, friend_id) values (?, ?)";
-            return jdbcTemplate.update(sqlQuery, id, friendId) > 0;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean removeFriend(Long id, Long friendId) {
-        String sqlQuery = "DELETE FROM user_friend WHERE user_id = ? AND friend_id = ?";
-        return jdbcTemplate.update(sqlQuery, id, friendId) > 0;
-    }
-
-    @Override
-    public boolean isHasFriend(Long id, Long friendId) {
-        return jdbcTemplate.queryForObject("SELECT EXISTS(SELECT FROM user_friend WHERE user_id = ? AND friend_id = ?)",
-                Boolean.class, id, friendId);
-    }
-
-    @Override
-    public List<User> findAllFriends(Long id) {
-        String sqlQuery = "SELECT * FROM " + this.getTableName() +
-                "WHERE user_id IN (SELECT friend_id FROM user_friend WHERE user_id = ?)";
+    public List<User> findAllFriends(long id) {
+        String sqlQuery = "SELECT * FROM users " +
+                "WHERE user_id IN (SELECT friend_id FROM user_friends WHERE user_id = ?)";
         return jdbcTemplate.query(sqlQuery, this::mapRowToUser, id);
     }
 
     @Override
-    public List<User> findCommonFriends(Long id, Long friendId) {
-        String sqlQuery = "SELECT * FROM `user` " +
+    public List<User> findCommonFriends(long id, long friendId) {
+        String sqlQuery = "SELECT * FROM users " +
                 "WHERE user_id IN" +
-                " ( SELECT friend_id FROM user_friend WHERE user_id = ? " +
-                "INTERSECT SELECT friend_id FROM user_friend WHERE user_id = ? )";
+                " ( SELECT friend_id FROM user_friends WHERE user_id = ? " +
+                "INTERSECT SELECT friend_id FROM user_friends WHERE user_id = ? )";
 
         return jdbcTemplate.query(sqlQuery, this::mapRowToUser, id, friendId);
     }
