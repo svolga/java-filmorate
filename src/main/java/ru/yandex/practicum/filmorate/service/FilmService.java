@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
@@ -16,10 +17,13 @@ import ru.yandex.practicum.filmorate.storage.AbstractStorage;
 @Service
 public class FilmService {
 
+    @Qualifier("inMemoryFilmStorage")
     private final AbstractStorage<Film> filmStorage;
+
+    @Qualifier("userService")
     private final UserService userService;
 
-    public FilmService(AbstractStorage<Film> filmStorage, UserService userService) {
+    public FilmService(@Qualifier("inMemoryFilmStorage") AbstractStorage<Film> filmStorage, UserService userService) {
         this.filmStorage = filmStorage;
         this.userService = userService;
     }

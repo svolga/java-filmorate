@@ -14,7 +14,9 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import javax.validation.constraints.Min;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import ru.yandex.practicum.filmorate.util.Const;
@@ -29,7 +31,12 @@ public class Film {
     @JsonIgnore
     private final Set<Long> likes = new HashSet<>();
 
+    private final Mpa mpa;
+    private final List<Genre> genres = new ArrayList<>();
+
     private long id;
+
+    private double rate;
 
     @NonNull
     @NotBlank(message = "Заполните name")
@@ -47,6 +54,10 @@ public class Film {
 
     public int getLikeCount() {
         return likes.size();
+    }
+
+    public void setMpaRating(int mpaId) {
+        mpa.setId(mpaId);
     }
 
 }
