@@ -14,7 +14,6 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 public class Director {
     private final long id;
-    @NonNull
     @NotBlank(message = "Заполните name")
     private final String name;
 }
