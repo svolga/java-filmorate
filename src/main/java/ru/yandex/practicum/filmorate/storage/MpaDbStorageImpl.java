@@ -29,7 +29,7 @@ public class MpaDbStorageImpl implements AbstractStorageGetter<Mpa> {
 
     @Override
     public Mpa findById(long id) {
-        String sqlQuery = "SELECT * FROM mpas WHERE mpa_id = ?";
+        String sqlQuery = "SELECT * FROM mpas WHERE rating_id = ?";
 
         try {
             return jdbcTemplate.queryForObject(sqlQuery, this::mapRowToMpa, id);

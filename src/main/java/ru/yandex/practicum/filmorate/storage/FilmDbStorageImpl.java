@@ -39,7 +39,7 @@ public class FilmDbStorageImpl implements FilmDbStorage {
     @Override
     public Film create(Film film) {
 
-        String sqlQuery = "INSERT INTO films (name, description, release_date, duration, mpa_id) " +
+        String sqlQuery = "INSERT INTO films (name, description, release_date, duration, rating_id) " +
                 "VALUES (?, ?, ?, ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -69,7 +69,7 @@ public class FilmDbStorageImpl implements FilmDbStorage {
         int mpaId = film.getMpa() == null ? null : film.getMpa().getId();
 
         String sqlQuery = "UPDATE films " +
-                "SET name = ?, release_date = ?, description = ?, duration = ?, rate = ?, mpa_id = ? " +
+                "SET name = ?, release_date = ?, description = ?, duration = ?, rate = ?, rating_id = ? " +
                 "WHERE film_id = ?";
 
         jdbcTemplate.update(sqlQuery, film.getName(), Date.valueOf(film.getReleaseDate()), film.getDescription(),
@@ -84,7 +84,7 @@ public class FilmDbStorageImpl implements FilmDbStorage {
     public List<Film> getAll() {
         String sqlQuery = "SELECT f.*, m.name AS mpa_name " +
                 "FROM films f " +
-                "LEFT JOIN mpas m ON f.mpa_id = m.mpa_id";
+                "LEFT JOIN mpas m ON f.rating_id = m.rating_id";
 
         List<Film> films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm);
 
@@ -100,7 +100,7 @@ public class FilmDbStorageImpl implements FilmDbStorage {
     public Film findById(long id) {
         String sqlQuery = "SELECT f.*, m.name AS mpa_name " +
                 "FROM films f " +
-                "LEFT JOIN mpas m ON f.mpa_id = m.mpa_id " +
+                "LEFT JOIN mpas m ON f.rating_id = m.rating_id " +
                 "WHERE f.film_id = ?";
 
         try {
@@ -132,7 +132,7 @@ public class FilmDbStorageImpl implements FilmDbStorage {
                 .rate(rs.getDouble("rate"))
                 .releaseDate(rs.getDate("release_date").toLocalDate())
                 .duration(rs.getInt("duration"))
-                .mpa(Mpa.builder().id(rs.getInt("mpa_id")).name(rs.getString("mpa_name")).build())
+                .mpa(Mpa.builder().id(rs.getInt("rating_id")).name(rs.getString("mpa_name")).build())
                 .build();
     }
 
@@ -145,7 +145,7 @@ public class FilmDbStorageImpl implements FilmDbStorage {
                 "LEFT JOIN  (SELECT film_id, COUNT(l.*) AS cnt FROM likes l " +
                 "GROUP BY (film_id) ) vs " +
                 "ON vs.film_id = f.film_id " +
-                "LEFT JOIN mpas m ON f.mpa_id = m.mpa_id " +
+                "LEFT JOIN mpas m ON f.rating_id = m.rating_id " +
                 "ORDER BY vs.cnt DESC " +
                 "LIMIT ?";
 
