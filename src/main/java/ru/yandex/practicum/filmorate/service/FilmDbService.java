@@ -59,4 +59,7 @@ public class FilmDbService {
         return filmDbStorage.findAllPopular(count);
     }
 
+    public List<Film> findCommonFilm(long idUser, long idFriend) {
+        return filmDbStorage.findCommonFilm(idUser, idFriend);
+    }
 }

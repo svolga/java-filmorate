@@ -13,11 +13,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 
-import java.sql.SQLException;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Types;
+import java.sql.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -150,6 +146,25 @@ public class FilmDbStorageImpl implements FilmDbStorage {
                 "LIMIT ?";
 
         List<Film> films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, count);
+
+        films = films.stream()
+                .map(film -> {
+                    getOtherLinks(film);
+                    return film;
+                })
+                .collect(Collectors.toList());
+
+        return films;
+    }
+
+    @Override
+    public List<Film> findCommonFilm(long idUser, long idFriend) {
+        String sqlQuery = "SELECT * FROM films " +
+                "WHERE film_id IN " +
+                "(SELECT film_id FROM likes WHERE user_id = ? " +
+                "INTERSECT SELECT film_id FROM likes WHERE user_id = ? )";
+
+        List<Film> films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, idUser, idFriend);
 
         films = films.stream()
                 .map(film -> {
