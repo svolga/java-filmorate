@@ -63,4 +63,3 @@ public class FilmDbService {
         return filmDbStorage.findCommonFilm(idUser, idFriend);
     }
 }
-

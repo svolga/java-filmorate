@@ -70,5 +70,4 @@ public class FilmController {
         log.info("Найти список общих фильмов у пользователя с id -->{} с пользователем с id -->{}.", userId, friendId);
         return filmDbService.findCommonFilm(userId, friendId);
     }
-
 }
