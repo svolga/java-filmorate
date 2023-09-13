@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
@@ -13,7 +12,6 @@ import ru.yandex.practicum.filmorate.storage.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.LikeDbStorage;
 import ru.yandex.practicum.filmorate.storage.UserDbStorage;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -69,7 +67,7 @@ public class FilmDbService {
     public List<Film> findByTitleAndDirector(String query, String by) {
         String[] params = by.split(",");
         for (String param : params) {
-            if (!SEARCH_FILM.contains(param)){
+            if (!SEARCH_FILM.contains(param)) {
                 throw new IncorrectParameterException("Неверное значение в параметре by");
             }
         }
