@@ -7,6 +7,7 @@ import java.util.Set;
 
 public interface FilmDbStorage extends AbstractStorage<Film> {
     List<Film> findAllPopular(int count);
+
     List<Film> findByFields(Set<String> fields, String query);
 
     List<Film> findDirectorsFilmsYearSorted(long id);
