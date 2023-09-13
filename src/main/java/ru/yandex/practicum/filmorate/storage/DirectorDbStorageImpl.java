@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -10,11 +11,13 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.Director;
+import ru.yandex.practicum.filmorate.model.Film;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -89,5 +92,46 @@ public class DirectorDbStorageImpl implements DirectorDbStorage {
         String sqlQuery = "DELETE FROM directors " +
                 "WHERE director_id = ?";
         jdbcTemplate.update(sqlQuery, id);
+    }
+
+    @Override
+    public void createFilmDirector(Film film) {
+        removeFilmDirector(film);
+
+        List<Director> directors = film.getDirectors().stream()
+                .distinct()
+                .collect(Collectors.toList());
+
+        if (!directors.isEmpty()) {
+            jdbcTemplate.batchUpdate(
+                    "MERGE INTO film_directors (film_id, director_id) VALUES (?, ?)",
+                    new BatchPreparedStatementSetter() {
+
+                        @Override
+                        public void setValues(PreparedStatement ps, int i) throws SQLException {
+                            ps.setLong(1, film.getId());
+                            ps.setLong(2, directors.get(i).getId());
+                        }
+
+                        @Override
+                        public int getBatchSize() {
+                            return directors.size();
+                        }
+                    });
+        }
+    }
+
+    @Override
+    public List<Director> findByFilm(Film film) {
+        String sqlQuery = "SELECT * " +
+                "FROM film_directors fd " +
+                "LEFT JOIN directors d ON d.director_id = fd.director_id " +
+                "WHERE film_id = ?";
+
+        return jdbcTemplate.query(sqlQuery, this::mapRowToDirector, film.getId());
+           }
+
+    private void removeFilmDirector(Film film) {
+        jdbcTemplate.update("DELETE FROM film_directors WHERE film_id = ?", film.getId());
     }
 }

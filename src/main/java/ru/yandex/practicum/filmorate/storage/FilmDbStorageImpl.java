@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -9,32 +10,27 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 
-import java.sql.SQLException;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Types;
+import java.sql.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Component
+@AllArgsConstructor
 @Qualifier("filmDbStorageImpl")
 public class FilmDbStorageImpl implements FilmDbStorage {
 
     private final JdbcTemplate jdbcTemplate;
     private final GenreDbStorage genreDbStorage;
-    private final LikeDbStorage<Long, Long> likeDbStorage;
+    private final DirectorDbStorage directorDbStorage;
 
-    public FilmDbStorageImpl(JdbcTemplate jdbcTemplate, GenreDbStorage genreDbStorage, LikeDbStorage<Long, Long> likeDbStorage) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.genreDbStorage = genreDbStorage;
-        this.likeDbStorage = likeDbStorage;
-    }
+    //private final LikeDbStorage<Long, Long> likeDbStorage;
+
 
     @Override
     public Film create(Film film) {
@@ -56,6 +52,7 @@ public class FilmDbStorageImpl implements FilmDbStorage {
 
         film.setId(keyHolder.getKey().longValue());
         genreDbStorage.createFilmGenre(film);
+        directorDbStorage.createFilmDirector(film);
 
         return findById(film.getId());
     }
@@ -76,6 +73,7 @@ public class FilmDbStorageImpl implements FilmDbStorage {
                 film.getDuration(), film.getRate(), mpaId, film.getId());
 
         genreDbStorage.createFilmGenre(film);
+        directorDbStorage.createFilmDirector(film);
 
         return findById(film.getId());
     }
@@ -115,8 +113,10 @@ public class FilmDbStorageImpl implements FilmDbStorage {
     private void getOtherLinks(Film film) {
         List<Genre> genres = genreDbStorage.findByFilm(film.getId());
         List<Long> userIds = findLikedUsersByFilm(film.getId());
+        List<Director> directors = directorDbStorage.findByFilm(film);
         film.getLikes().addAll(userIds);
         film.getGenres().addAll(genres);
+        film.getDirectors().addAll(directors);
     }
 
     private List<Long> findLikedUsersByFilm(long filmId) {
