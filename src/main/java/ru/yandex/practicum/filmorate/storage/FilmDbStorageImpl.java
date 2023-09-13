@@ -158,20 +158,20 @@ public class FilmDbStorageImpl implements FilmDbStorage {
     }
 
     @Override
-    public List<Film> findCommonFilm(long idUser, long idFriend) {
+    public List<Film> findCommonFilm(long userId, long friendId) {
         String sqlQuery = "SELECT * FROM films " +
                 "WHERE film_id IN " +
                 "(SELECT film_id FROM likes WHERE user_id = ? " +
                 "INTERSECT SELECT film_id FROM likes WHERE user_id = ? )";
 
-        List<Film> films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, idUser, idFriend);
-
-        films = films.stream()
-                .map(film -> {
-                    getOtherLinks(film);
-                    return film;
-                })
-                .collect(Collectors.toList());
+        List<Film> films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, userId, friendId);
+//
+//        films = films.stream()
+//                .map(film -> {
+//                    getOtherLinks(film);
+//                    return film;
+//                })
+//                .collect(Collectors.toList());
 
         return films;
     }

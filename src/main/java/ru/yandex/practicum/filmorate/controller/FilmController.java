@@ -65,10 +65,9 @@ public class FilmController {
     }
 
     @GetMapping("/common")
-    public List<Film> findCommonFilm(@RequestParam (value = "userId", required = true) long userId,
-                                     @RequestParam (value = "friendId", required = true) long friendId){
-        log.info("Найти список общих фильмов у пользователя с id -->{} с пользователем с id -->{}.", userId, friendId);
+    public List<Film> findCommonFilm(@RequestParam(value = "userId") long userId,
+                                     @RequestParam(value = "friendId") long friendId) {
+        log.info("Найти список общих фильмов у пользователей с id --> {} и с id --> {}.", userId, friendId);
         return filmDbService.findCommonFilm(userId, friendId);
     }
-
 }

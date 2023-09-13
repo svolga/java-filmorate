@@ -7,5 +7,5 @@ import java.util.List;
 public interface FilmDbStorage extends AbstractStorage<Film> {
     List<Film> findAllPopular(int count);
 
-    List<Film> findCommonFilm(long idUser, long idFriend);
+    List<Film> findCommonFilm(long userId, long friendId);
 }
