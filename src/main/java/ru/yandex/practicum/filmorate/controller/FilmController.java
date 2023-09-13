@@ -2,15 +2,7 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmDbService;
@@ -72,4 +64,10 @@ public class FilmController {
         return filmDbService.findAllPopular(count);
     }
 
+    @GetMapping("/director/{directorId}")
+    public List<Film> findDirectorsFilms(@PathVariable long directorId,
+                                         @RequestParam(value = "sortBy") String sortBy) {
+        log.info("Получить список фильмов режисёра с id  --> {}", directorId);
+        return filmDbService.findDirectorsFilms(directorId, sortBy);
+    }
 }

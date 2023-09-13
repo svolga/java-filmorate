@@ -86,12 +86,7 @@ public class FilmDbStorageImpl implements FilmDbStorage {
 
         List<Film> films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm);
 
-        return films.stream()
-                .map(film -> {
-                    getOtherLinks(film);
-                    return film;
-                })
-                .collect(Collectors.toList());
+        return getOtherLinks(films);
     }
 
     @Override
@@ -118,6 +113,12 @@ public class FilmDbStorageImpl implements FilmDbStorage {
         film.getGenres().addAll(genres);
         film.getDirectors().addAll(directors);
     }
+    private List<Film> getOtherLinks(List<Film> films) {
+        return films.stream()
+                .peek(this::getOtherLinks)
+                .collect(Collectors.toList());
+    }
+
 
     private List<Long> findLikedUsersByFilm(long filmId) {
         String sqlQuery = "SELECT user_id FROM likes WHERE film_id = ?";
@@ -151,13 +152,42 @@ public class FilmDbStorageImpl implements FilmDbStorage {
 
         List<Film> films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, count);
 
-        films = films.stream()
-                .map(film -> {
-                    getOtherLinks(film);
-                    return film;
-                })
-                .collect(Collectors.toList());
+        return getOtherLinks(films);
+    }
 
-        return films;
+    @Override
+    public List<Film> findDirectorsFilmsYearSorted(long id) {
+        directorDbStorage.findById(id);
+        String sqlQuery = "SELECT * " +
+                "FROM films f " +
+                "LEFT JOIN  (SELECT film_id, COUNT(l.*) AS cnt FROM likes l " +
+                "GROUP BY (film_id) ) vs " +
+                "ON vs.film_id = f.film_id " +
+                "LEFT JOIN (SELECT name AS mpa_name, rating_id  FROM mpas) as m ON f.rating_id = m.rating_id " +
+                "LEFT JOIN film_directors fd ON f.film_id = fd.film_id " +
+                "WHERE director_id = ? " +
+                "ORDER BY f.release_date ";
+
+        List<Film> films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, id);
+
+        return getOtherLinks(films);
+    }
+
+    @Override
+    public List<Film> findDirectorsFilmsLikeSorted(long id) {
+        directorDbStorage.findById(id);
+        String sqlQuery = "SELECT * " +
+                "FROM films f " +
+                "LEFT JOIN  (SELECT film_id, COUNT(l.*) AS cnt FROM likes l " +
+                "GROUP BY (film_id) ) vs " +
+                "ON vs.film_id = f.film_id " +
+                "LEFT JOIN (SELECT name AS mpa_name, rating_id  FROM mpas) as m ON f.rating_id = m.rating_id " +
+                "LEFT JOIN film_directors fd ON f.film_id = fd.film_id " +
+                "WHERE director_id = ? " +
+                "ORDER BY vs.cnt DESC ";
+
+        List<Film> films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, id);
+
+        return getOtherLinks(films);
     }
 }
