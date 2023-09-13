@@ -118,6 +118,16 @@ public class FilmControllerTest {
         assertEquals("Фильм с id = 9999 не найден", ex.getMessage());
     }
 
+    @Test
+    void shouldFindFilm() {
+        Film film = getTestFilm();
+        filmController.createFilm(film);
+
+        List<Film> films = filmController.findByTitleAndDirector("SMOD", "title");
+
+        assertEquals(1, films.size());
+    }
+
     private Film getTestFilm() {
         return Film.builder()
                 .name("nisi eiusmod")

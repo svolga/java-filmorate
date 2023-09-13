@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -14,13 +15,10 @@ import java.util.List;
 @Slf4j
 @Validated
 @RequestMapping("/films")
+@AllArgsConstructor
 public class FilmController {
 
     private final FilmDbService filmDbService;
-
-    public FilmController(FilmDbService filmDbService) {
-        this.filmDbService = filmDbService;
-    }
 
     @GetMapping
     public List<Film> getAllFilms() {
@@ -64,10 +62,20 @@ public class FilmController {
         return filmDbService.findAllPopular(count);
     }
 
+
     @GetMapping("/common")
     public List<Film> findCommonFilm(@RequestParam (value = "userId", required = true) long userId,
                                      @RequestParam (value = "friendId", required = true) long friendId){
         log.info("Найти список общих фильмов у пользователя с id -->{} с пользователем с id -->{}.", userId, friendId);
         return filmDbService.findCommonFilm(userId, friendId);
     }
+}
+
+    @GetMapping("/search")
+    public List<Film> findByTitleAndDirector(@RequestParam(value = "query", required = true) String query,
+                                             @RequestParam(value = "by", required = true) String by) {
+        log.info("Поиск -->{} фильма по названию и режисеру -->{} ", query, by);
+        return filmDbService.findByTitleAndDirector(query, by);
+    }
+
 }
