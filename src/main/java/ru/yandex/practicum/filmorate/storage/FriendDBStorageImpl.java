@@ -1,17 +1,14 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+@AllArgsConstructor
 @Repository
 public class FriendDBStorageImpl implements FriendDbStorage {
 
     private final JdbcTemplate jdbcTemplate;
-
-    public FriendDBStorageImpl(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
 
     @Override
     public boolean createFriend(long id, long friendId) {
