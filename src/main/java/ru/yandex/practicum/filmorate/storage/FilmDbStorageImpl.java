@@ -14,9 +14,17 @@ import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.util.Const;
 
 import java.sql.*;
+import java.sql.SQLException;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Types;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -125,18 +133,6 @@ public class FilmDbStorageImpl implements FilmDbStorage {
         return jdbcTemplate.queryForList(sqlQuery, Long.class, filmId);
     }
 
-    private Film mapRowToFilm(ResultSet rs, int rowNum) throws SQLException {
-        return Film.builder()
-                .id(rs.getLong("film_id"))
-                .name(rs.getString("name"))
-                .description(rs.getString("description"))
-                .rate(rs.getDouble("rate"))
-                .releaseDate(rs.getDate("release_date").toLocalDate())
-                .duration(rs.getInt("duration"))
-                .mpa(Mpa.builder().id(rs.getInt("rating_id")).name(rs.getString("mpa_name")).build())
-                .build();
-    }
-
     @Override
     public List<Film> findAllPopular(int count) {
 
@@ -190,4 +186,51 @@ public class FilmDbStorageImpl implements FilmDbStorage {
 
         return getOtherLinks(films);
     }
+
+    @Override
+    public List<Film> findByFields(Set<String> fields, String query) {
+
+        StringBuilder sbSubQuery = new StringBuilder();
+        List<Object> parameters = new ArrayList<>();
+        String likeQuery = getLIkeQuery(query);
+        parameters.add(likeQuery);
+
+        if (fields.contains(Const.DIRECTOR_SEARCH) && fields.contains(Const.TITLE_SEARCH)) {
+            parameters.add(likeQuery);
+            sbSubQuery.append(" AND (LOWER(f.name) LIKE ? OR LOWER(d.name) LIKE ?) ");
+        } else if (fields.contains(Const.DIRECTOR_SEARCH)) {
+            sbSubQuery.append(" AND LOWER(d.name) LIKE ? ");
+        } else if (fields.contains(Const.TITLE_SEARCH)) {
+            sbSubQuery.append(" AND LOWER(f.name) LIKE ? ");
+        }
+
+        String sqlQuery = "SELECT DISTINCT vs.cnt, m.name AS mpa_name, f.* " +
+                "FROM films f LEFT JOIN  (SELECT film_id, COUNT(l.*) AS cnt FROM likes l GROUP BY (film_id) ) vs " +
+                "ON vs.film_id = f.film_id " +
+                "LEFT JOIN mpas m ON f.rating_id = m.rating_id " +
+                "LEFT JOIN film_directors fd ON f.film_id = fd.film_id " +
+                "LEFT JOIN directors d ON d.director_id = fd.director_id " +
+                "WHERE 1 = 1 " + sbSubQuery.toString() +
+                "ORDER BY vs.cnt DESC";
+
+        Object[] paramArray = parameters.toArray();
+        return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, paramArray);
+    }
+
+    private String getLIkeQuery(String query) {
+        return "%" + query.toLowerCase() + "%";
+    }
+
+    private Film mapRowToFilm(ResultSet rs, int rowNum) throws SQLException {
+        return Film.builder()
+                .id(rs.getLong("film_id"))
+                .name(rs.getString("name"))
+                .description(rs.getString("description"))
+                .rate(rs.getDouble("rate"))
+                .releaseDate(rs.getDate("release_date").toLocalDate())
+                .duration(rs.getInt("duration"))
+                .mpa(Mpa.builder().id(rs.getInt("rating_id")).name(rs.getString("mpa_name")).build())
+                .build();
+    }
+
 }
