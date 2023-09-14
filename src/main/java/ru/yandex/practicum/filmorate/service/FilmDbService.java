@@ -63,6 +63,11 @@ public class FilmDbService {
         return filmDbStorage.findAllPopular(count);
     }
 
+
+    public List<Film> findCommonFilm(long userId, long friendId) {
+        return filmDbStorage.findCommonFilm(userId, friendId);
+    }
+
     public List<Film> findByTitleAndDirector(String query, String by) {
         String[] params = by.split(",");
         for (String param : params) {
@@ -86,3 +91,4 @@ public class FilmDbService {
         }
     }
 }
+
