@@ -1,10 +1,12 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.FeedDbStorage;
 import ru.yandex.practicum.filmorate.storage.FriendDbStorage;
 import ru.yandex.practicum.filmorate.storage.UserDbStorage;
 import ru.yandex.practicum.filmorate.storage.UserDbStorageImpl;
@@ -13,6 +15,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @Slf4j
+@AllArgsConstructor
 @Service
 public class UserDbService {
 
@@ -20,11 +23,7 @@ public class UserDbService {
     private final UserDbStorage userDbStorage;
 
     private final FriendDbStorage friendDbStorage;
-
-    public UserDbService(UserDbStorageImpl userDbStorageImpl, FriendDbStorage friendDbStorage) {
-        this.userDbStorage = userDbStorageImpl;
-        this.friendDbStorage = friendDbStorage;
-    }
+    private final FeedDbStorage feedDbStorage;
 
     public User create(@Valid User user) {
         return userDbStorage.create(user);

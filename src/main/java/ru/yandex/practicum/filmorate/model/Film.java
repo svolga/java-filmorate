@@ -33,6 +33,7 @@ public class Film {
 
     private final Mpa mpa;
     private final List<Genre> genres = new ArrayList<>();
+    private final List<Director> directors = new ArrayList<>();
 
     private long id;
 

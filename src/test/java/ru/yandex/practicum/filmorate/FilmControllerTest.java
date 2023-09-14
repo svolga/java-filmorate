@@ -6,9 +6,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import ru.yandex.practicum.filmorate.controller.DirectorController;
 import ru.yandex.practicum.filmorate.controller.FilmController;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.util.Const;
 
@@ -26,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class FilmControllerTest {
 
     private final FilmController filmController;
+    private final DirectorController directorController;
 
     @Test
     void createFilm() {
@@ -116,6 +119,36 @@ public class FilmControllerTest {
                 () -> filmController.updateFilm(film)
         );
         assertEquals("Фильм с id = 9999 не найден", ex.getMessage());
+    }
+
+    @Test
+    void shouldFindFilm() {
+        Film film = getTestFilm();
+        filmController.createFilm(film);
+
+        List<Film> films = filmController.findByTitleAndDirector("SMOD", "title");
+
+        assertEquals(1, films.size());
+    }
+
+    @Test
+    void shouldFindDirectorsFilm() {
+        Director director = new Director(1, "Director");
+        director = directorController.createDirector(director);
+        Film film1 = getTestFilm();
+        film1.getDirectors().add(director);
+        Film film2 = getTestFilm();
+        film2.getDirectors().add(director);
+        film2.setReleaseDate(film1.getReleaseDate().minusDays(1));
+
+        film1 = filmController.createFilm(film1);
+        film2 = filmController.createFilm(film2);
+        List<Film> films = filmController.findDirectorsFilms(director.getId(), "year");
+
+        assertEquals(2, films.size());
+        assertEquals(films.get(0), film2);
+        assertEquals(films.get(1), film1);
+        assertEquals(2, films.size());
     }
 
     private Film getTestFilm() {
