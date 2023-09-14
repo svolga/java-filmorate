@@ -16,11 +16,7 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.util.Const;
 
-import java.sql.SQLException;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Types;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -118,6 +114,7 @@ public class FilmDbStorageImpl implements FilmDbStorage {
         film.getGenres().addAll(genres);
         film.getDirectors().addAll(directors);
     }
+
     private List<Film> getOtherLinks(List<Film> films) {
         return films.stream()
                 .peek(this::getOtherLinks)
@@ -187,7 +184,7 @@ public class FilmDbStorageImpl implements FilmDbStorage {
 
     @Override
     public void removeFilm(long filmId) {
-        if(findById(filmId) == null){
+        if (findById(filmId) == null) {
             throw new FilmNotFoundException("Фильм c id = " + filmId + " не существует");
         }
         String sqlQuery = "DELETE FROM films WHERE film_id = ?";
