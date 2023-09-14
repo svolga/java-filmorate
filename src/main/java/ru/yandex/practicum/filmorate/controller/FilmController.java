@@ -71,8 +71,8 @@ public class FilmController {
     }
 
     @GetMapping("/search")
-    public List<Film> findByTitleAndDirector(@RequestParam(value = "query", required = true) String query,
-                                             @RequestParam(value = "by", required = true) String by) {
+    public List<Film> findByTitleAndDirector(@RequestParam(value = "query") String query,
+                                             @RequestParam(value = "by") String by) {
         log.info("Поиск -->{} фильма по названию и режисеру -->{} ", query, by);
         return filmDbService.findByTitleAndDirector(query, by);
     }
@@ -85,7 +85,7 @@ public class FilmController {
     }
 
     @DeleteMapping("/{filmId}")
-    public void removeFilmById(@PathVariable long filmId){
+    public void removeFilmById(@PathVariable long filmId) {
         log.info("Удалить фильм с id --> {}", filmId);
         filmDbService.removeFilmById(filmId);
     }
