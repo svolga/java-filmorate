@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -7,6 +8,7 @@ import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmDbStorage;
+import ru.yandex.practicum.filmorate.storage.FeedDbStorage;
 import ru.yandex.practicum.filmorate.storage.FriendDbStorage;
 import ru.yandex.practicum.filmorate.storage.UserDbStorage;
 import ru.yandex.practicum.filmorate.storage.UserDbStorageImpl;
@@ -18,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
+@AllArgsConstructor
 @Service
 public class UserDbService {
 
@@ -28,12 +31,7 @@ public class UserDbService {
 
     private final FilmDbStorage filmDbStorage;
 
-    public UserDbService(UserDbStorageImpl userDbStorageImpl, FriendDbStorage friendDbStorage,
-                         FilmDbStorage filmDbStorage) {
-        this.userDbStorage = userDbStorageImpl;
-        this.friendDbStorage = friendDbStorage;
-        this.filmDbStorage = filmDbStorage;
-    }
+    private final FeedDbStorage feedDbStorage;
 
     public User create(@Valid User user) {
         return userDbStorage.create(user);
@@ -74,6 +72,10 @@ public class UserDbService {
         User other = findUserById(otherId);
         List<User> friends = userDbStorage.findCommonFriends(id, otherId);
         return friends;
+    }
+
+    public void removeUserById(long userId) {
+        userDbStorage.removeUserById(userId);
     }
 
     public List<Film> findRecommendations(long id) {

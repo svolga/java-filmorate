@@ -40,7 +40,7 @@ public class MpaDbStorageImpl implements AbstractStorageGetter<Mpa> {
 
     private Mpa mapRowToMpa(ResultSet rs, int rowNum) throws SQLException {
         return Mpa.builder()
-                .id(rs.getInt("mpa_id"))
+                .id(rs.getInt("rating_id"))
                 .name(rs.getString("name"))
                 .build();
     }
