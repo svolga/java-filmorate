@@ -16,11 +16,7 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.util.Const;
 
-import java.sql.SQLException;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Types;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -118,6 +114,7 @@ public class FilmDbStorageImpl implements FilmDbStorage {
         film.getGenres().addAll(genres);
         film.getDirectors().addAll(directors);
     }
+
     private List<Film> getOtherLinks(List<Film> films) {
         return films.stream()
                 .peek(this::getOtherLinks)
@@ -132,20 +129,45 @@ public class FilmDbStorageImpl implements FilmDbStorage {
 
 
     @Override
-    public List<Film> findAllPopular(int count) {
-
+    public List<Film> findAllPopular(int count, Long genreId, Integer year) {
         log.info("count --> {}", count);
+        log.info("genreId --> {}", genreId);
+        log.info("year --> {}", year);
 
+        List<Film> films;
+        String selectionRules = "";
         String sqlQuery = "SELECT vs.cnt, m.name AS mpa_name, f.* FROM films f " +
                 "LEFT JOIN  (SELECT film_id, COUNT(l.*) AS cnt FROM likes l " +
                 "GROUP BY (film_id) ) vs " +
                 "ON vs.film_id = f.film_id " +
                 "LEFT JOIN mpas m ON f.rating_id = m.rating_id " +
+                " %s " +
                 "ORDER BY vs.cnt DESC " +
-                "LIMIT ?";
+                "LIMIT ? ;";
 
-        List<Film> films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, count);
-
+        if (genreId == null) {
+            if (year == null) {
+                films = jdbcTemplate.query(String.format(sqlQuery, selectionRules),
+                        this::mapRowToFilm, count);
+            } else {
+                selectionRules = "WHERE YEAR(release_date) = ?";
+                films = jdbcTemplate.query(String.format(sqlQuery, selectionRules),
+                        this::mapRowToFilm, year, count);
+            }
+        } else {
+            if (year == null) {
+                genreDbStorage.findById(genreId);
+                selectionRules = "WHERE f.film_id IN (SELECT film_id FROM film_genres WHERE genre_id = ? )";
+                films = jdbcTemplate.query(String.format(sqlQuery, selectionRules),
+                        this::mapRowToFilm, genreId, count);
+            } else {
+                genreDbStorage.findById(genreId);
+                selectionRules = "WHERE f.film_id IN (SELECT film_id FROM film_genres WHERE genre_id = ? " +
+                        " AND YEAR(release_date) = ? )";
+                films = jdbcTemplate.query(String.format(sqlQuery, selectionRules),
+                        this::mapRowToFilm, genreId, year, count);
+            }
+        }
         return getOtherLinks(films);
     }
 
