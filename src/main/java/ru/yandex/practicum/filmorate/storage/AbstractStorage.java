@@ -1,16 +1,5 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import ru.yandex.practicum.filmorate.exception.ValidateException;
+public interface AbstractStorage<T> extends AbstractStorageCreator<T>, AbstractStorageUpdater<T>, AbstractStorageGetter<T> {
 
-import java.util.List;
-
-public interface AbstractStorage<T> {
-
-    T create(T t);
-
-    T update(T t) throws ValidateException;
-
-    List<T> getAll();
-
-    T findById(long id);
 }

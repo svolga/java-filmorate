@@ -9,7 +9,5 @@ public class Const {
 
     public static final String DIRECTOR_SEARCH = "director";
     public static final String TITLE_SEARCH = "title";
-
     public static final Set<String> SEARCH_FILM = Set.of(DIRECTOR_SEARCH, TITLE_SEARCH);
-
 }

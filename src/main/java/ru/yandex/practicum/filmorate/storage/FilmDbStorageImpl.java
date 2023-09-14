@@ -16,7 +16,6 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.util.Const;
 
-import java.sql.*;
 import java.sql.SQLException;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -36,8 +35,6 @@ public class FilmDbStorageImpl implements FilmDbStorage {
     private final JdbcTemplate jdbcTemplate;
     private final GenreDbStorage genreDbStorage;
     private final DirectorDbStorage directorDbStorage;
-
-    //private final LikeDbStorage<Long, Long> likeDbStorage;
 
 
     @Override
@@ -132,6 +129,7 @@ public class FilmDbStorageImpl implements FilmDbStorage {
         String sqlQuery = "SELECT user_id FROM likes WHERE film_id = ?";
         return jdbcTemplate.queryForList(sqlQuery, Long.class, filmId);
     }
+
 
     @Override
     public List<Film> findAllPopular(int count) {

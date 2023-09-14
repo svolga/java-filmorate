@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,7 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
+import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.FeedDbService;
 import ru.yandex.practicum.filmorate.service.UserDbService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -21,16 +24,12 @@ import java.util.List;
 @RestController
 @Slf4j
 @Validated
+@AllArgsConstructor
 @RequestMapping("/users")
 public class UserController {
 
-    private final UserService userService;
     private final UserDbService userDbService;
-
-    public UserController(UserService userService, UserDbService userDbService) {
-        this.userService = userService;
-        this.userDbService = userDbService;
-    }
+    private final FeedDbService feedDbService;
 
     @GetMapping
     public List<User> getAllUsers() {
@@ -79,4 +78,9 @@ public class UserController {
         return userDbService.findCommonFriends(id, otherId);
     }
 
+    @GetMapping("/{id}/feed")
+    public List<Feed> findFieds(@PathVariable long id) {
+        log.info("Поиск feeds для пользователя с id -->{}", id);
+        return feedDbService.findByUserId(id);
+    }
 }
