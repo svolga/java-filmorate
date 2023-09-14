@@ -97,7 +97,7 @@ public class UserDbStorageImpl implements UserDbStorage {
     @Override
     public void removeUserById(long userId) {
         if(findById(userId) == null){
-            throw new UserNotFoundException(String.format("User с id = %d не найден", userId));
+            throw new UserNotFoundException(String.format("User с id = " + userId + " не найден"));
         }
         String sqlQuery = "DELETE FROM users WHERE user_id = ?";
         jdbcTemplate.update(sqlQuery, userId);
