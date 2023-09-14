@@ -129,7 +129,7 @@ public class DirectorDbStorageImpl implements DirectorDbStorage {
                 "WHERE film_id = ?";
 
         return jdbcTemplate.query(sqlQuery, this::mapRowToDirector, film.getId());
-           }
+    }
 
     private void removeFilmDirector(Film film) {
         jdbcTemplate.update("DELETE FROM film_directors WHERE film_id = ?", film.getId());
