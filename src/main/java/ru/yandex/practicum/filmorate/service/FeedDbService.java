@@ -12,10 +12,10 @@ import java.util.List;
 @AllArgsConstructor
 public class FeedDbService {
 
-    private FeedDbStorage feedDbStorage;
-    private UserDbStorage userDbStorage;
+    private final FeedDbStorage feedDbStorage;
+    private final UserDbStorage userDbStorage;
 
-    public List<Feed> findByUserId(long userId){
+    public List<Feed> findByUserId(long userId) {
         userDbStorage.findById(userId);
         return feedDbStorage.findByUserId(userId);
     }
