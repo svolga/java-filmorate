@@ -13,11 +13,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 
-import java.sql.SQLException;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Types;
+import java.sql.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -110,6 +106,22 @@ public class FilmDbStorageImpl implements FilmDbStorage {
         } catch (EmptyResultDataAccessException e) {
             throw new FilmNotFoundException(String.format("Фильм с id = %d не найден", id));
         }
+    }
+
+
+    @Override
+    public List<Film> getLikedFilms(long userId) {
+        String sqlQuery = "SELECT f.*, m.name AS mpa_name \n" +
+                "                FROM films f \n" +
+                "                LEFT JOIN mpas m ON f.rating_id = m.rating_id\n" +
+                "                LEFT JOIN likes l ON l.film_id = f.film_id\n" +
+                "                WHERE l.user_id = ? ";
+
+        List<Film> films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, userId);
+
+        return films.stream()
+                .peek(this::getOtherLinks)
+                .collect(Collectors.toList());
     }
 
     private void getOtherLinks(Film film) {

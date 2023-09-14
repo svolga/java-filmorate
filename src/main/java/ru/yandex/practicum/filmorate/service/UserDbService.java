@@ -4,13 +4,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.FriendDbStorage;
 import ru.yandex.practicum.filmorate.storage.UserDbStorage;
 import ru.yandex.practicum.filmorate.storage.UserDbStorageImpl;
 
 import javax.validation.Valid;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -21,9 +26,13 @@ public class UserDbService {
 
     private final FriendDbStorage friendDbStorage;
 
-    public UserDbService(UserDbStorageImpl userDbStorageImpl, FriendDbStorage friendDbStorage) {
+    private final FilmDbStorage filmDbStorage;
+
+    public UserDbService(UserDbStorageImpl userDbStorageImpl, FriendDbStorage friendDbStorage,
+                         FilmDbStorage filmDbStorage) {
         this.userDbStorage = userDbStorageImpl;
         this.friendDbStorage = friendDbStorage;
+        this.filmDbStorage = filmDbStorage;
     }
 
     public User create(@Valid User user) {
@@ -65,6 +74,27 @@ public class UserDbService {
         User other = findUserById(otherId);
         List<User> friends = userDbStorage.findCommonFriends(id, otherId);
         return friends;
+    }
+
+    public List<Film> findRecommendations(long id) {
+        List<User> users = getAll();
+        List<Film> userFilms = filmDbStorage.getLikedFilms(id);
+        HashMap<Long, Integer> counter = new HashMap<>();
+
+        for (User user : users) {
+            if (user.getId() != id) {
+                List<Film> userToFindFilms = filmDbStorage.getLikedFilms(user.getId());
+                userToFindFilms.retainAll(userFilms);
+                counter.put(user.getId(), userToFindFilms.size());
+            }
+        }
+
+        Long commonUserId = Collections.max(counter.entrySet(), Map.Entry.comparingByValue()).getKey();
+        List<Film> commonUserFilms = filmDbStorage.getLikedFilms(commonUserId);
+
+        commonUserFilms.removeAll(userFilms);
+
+        return commonUserFilms;
     }
 
 }
