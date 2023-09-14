@@ -89,5 +89,4 @@ public class FilmController {
         log.info("Удалить фильм с id --> {}", filmId);
         filmDbService.removeFilmById(filmId);
     }
-
 }
