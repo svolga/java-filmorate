@@ -186,6 +186,15 @@ public class FilmDbStorageImpl implements FilmDbStorage {
     }
 
     @Override
+    public void removeFilm(long filmId) {
+        if(findById(filmId) == null){
+            throw new FilmNotFoundException("Фильм c id = " + filmId + " не существует");
+        }
+        String sqlQuery = "DELETE FROM films WHERE film_id = ?";
+        jdbcTemplate.update(sqlQuery, filmId);
+    }
+
+    @Override
     public List<Film> findByFields(Set<String> fields, String query) {
 
         StringBuilder sbSubQuery = new StringBuilder();

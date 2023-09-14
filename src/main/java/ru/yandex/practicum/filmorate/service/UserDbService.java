@@ -66,4 +66,7 @@ public class UserDbService {
         return friends;
     }
 
+    public void removeUserById(long userId) {
+        userDbStorage.removeUserById(userId);
+    }
 }

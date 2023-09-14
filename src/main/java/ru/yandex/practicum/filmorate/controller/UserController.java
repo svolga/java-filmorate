@@ -48,6 +48,12 @@ public class UserController {
         return userDbService.update(user);
     }
 
+    @DeleteMapping("/{userId}")
+    public void removeUserById(@PathVariable long userId){
+        log.info("Удалить пользователя с id --> {}", userId);
+        userDbService.removeUserById(userId);
+    }
+
     @GetMapping("/{id}")
     public User findUser(@PathVariable long id) {
         return userDbService.findUserById(id);

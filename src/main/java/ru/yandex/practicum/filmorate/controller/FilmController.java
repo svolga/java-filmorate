@@ -84,5 +84,10 @@ public class FilmController {
         return filmDbService.findDirectorsFilms(directorId, sortBy);
     }
 
+    @DeleteMapping("/{filmId}")
+    public void removeFilmById(@PathVariable long filmId){
+        log.info("Удалить фильм с id --> {}", filmId);
+        filmDbService.removeFilmById(filmId);
+    }
 
 }

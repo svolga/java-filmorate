@@ -85,4 +85,8 @@ public class FilmDbService {
                     " Возможные параметры для выбора сортировки: year и likes");
         }
     }
+
+    public void removeFilmById(long filmId) {
+        filmDbStorage.removeFilm(filmId);
+    }
 }
