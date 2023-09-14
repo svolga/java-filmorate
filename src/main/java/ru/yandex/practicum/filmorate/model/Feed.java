@@ -7,9 +7,7 @@ import ru.yandex.practicum.filmorate.util.EventType;
 import ru.yandex.practicum.filmorate.util.Operation;
 
 import javax.validation.constraints.NotNull;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Set;
 
 @Data
 @Builder
