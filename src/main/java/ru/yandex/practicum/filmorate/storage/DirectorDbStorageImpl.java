@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
+import ru.yandex.practicum.filmorate.exception.DirectorNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -45,7 +45,7 @@ public class DirectorDbStorageImpl implements DirectorDbStorage {
     @Override
     public Director update(Director director) throws ValidateException {
         if (findById(director.getId()) == null) {
-            throw new FilmNotFoundException("Режиссёр c id = " + director.getId() + " не существует"); //TODO Сменить эксепщн
+            throw new DirectorNotFoundException("Режиссёр c id = " + director.getId() + " не существует");
         }
         String sqlQuery = "UPDATE directors " +
                 "SET name = ? " +
@@ -73,7 +73,7 @@ public class DirectorDbStorageImpl implements DirectorDbStorage {
         try {
             return jdbcTemplate.queryForObject(sqlQuery, this::mapRowToDirector, id);
         } catch (EmptyResultDataAccessException e) {
-            throw new FilmNotFoundException(String.format("Режиссёр с id = %d не найден", id)); // TODO change exception
+            throw new DirectorNotFoundException(String.format("Режиссёр с id = %d не найден", id));
         }
     }
 
@@ -87,7 +87,7 @@ public class DirectorDbStorageImpl implements DirectorDbStorage {
     @Override
     public void deleteById(long id) {
         if (findById(id) == null) {
-            throw new FilmNotFoundException("Режиссёр c id = " + id + " не существует"); //TODO Сменить эксепщн
+            throw new DirectorNotFoundException("Режиссёр c id = " + id + " не существует");
         }
         String sqlQuery = "DELETE FROM directors " +
                 "WHERE director_id = ?";

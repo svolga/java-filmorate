@@ -59,8 +59,8 @@ public class FilmDbService {
         likeDbStorage.removeLike(id, userId);
     }
 
-    public List<Film> findAllPopular(int count) {
-        return filmDbStorage.findAllPopular(count);
+    public List<Film> findAllPopular(int count, Long genreId, Integer year) {
+        return filmDbStorage.findAllPopular(count, genreId, year);
     }
 
 

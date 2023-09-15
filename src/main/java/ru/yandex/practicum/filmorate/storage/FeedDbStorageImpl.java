@@ -78,7 +78,7 @@ public class FeedDbStorageImpl implements FeedDbStorage {
     }
 
     @Override
-    public List<Feed> findByUserId(long user_id) {
+    public List<Feed> findByUserId(long userId) {
         String sqlQuery = "SELECT * " +
                 "FROM feeds " +
                 "WHERE user_id = ?" +
@@ -86,9 +86,9 @@ public class FeedDbStorageImpl implements FeedDbStorage {
                 "LIMIT 100";
 
         try {
-            return jdbcTemplate.query(sqlQuery, this::mapRowToFeed, user_id);
+            return jdbcTemplate.query(sqlQuery, this::mapRowToFeed, userId);
         } catch (EmptyResultDataAccessException e) {
-            throw new FeedNotFoundException(String.format("Feeds для пользователя с user_id = %d не найден", user_id));
+            throw new FeedNotFoundException(String.format("Feeds для пользователя с user_id = %d не найден", userId));
         }
     }
 

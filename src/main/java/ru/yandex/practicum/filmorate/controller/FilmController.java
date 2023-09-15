@@ -3,7 +3,15 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmDbService;
@@ -57,9 +65,11 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public List<Film> findAllPopular(@RequestParam(value = "count", defaultValue = "10", required = false) int count) {
+    public List<Film> findAllPopular(@RequestParam(value = "count", defaultValue = "10", required = false) int count,
+                                     @RequestParam(value = "genreId", required = false) Long genreId,
+                                     @RequestParam(value = "year", required = false) Integer year) {
         log.info("Получить {} популярных фильмов", count);
-        return filmDbService.findAllPopular(count);
+        return filmDbService.findAllPopular(count, genreId, year);
     }
 
     @GetMapping("/common")
