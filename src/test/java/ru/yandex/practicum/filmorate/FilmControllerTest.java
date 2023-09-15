@@ -21,6 +21,7 @@ import javax.validation.ConstraintViolationException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -157,7 +158,11 @@ public class FilmControllerTest {
 
     @Test
     void shouldFindAllPopularFilms() {
-        //TODO настроить удаление всех фильмов из бд перед этим тестом
+        List<Long> filmsToDelete = filmController.getAllFilms().stream().map(Film::getId).collect(Collectors.toList());
+        for (Long id : filmsToDelete) {
+            filmController.removeFilmById(id);
+        }
+
         Director director1 = new Director(1, "Director 1");
         director1 = directorController.createDirector(director1);
 

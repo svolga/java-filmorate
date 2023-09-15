@@ -70,7 +70,7 @@ public class FilmController {
         log.info("Найти список общих фильмов у пользователей с id --> {} и с id --> {}.", userId, friendId);
         return filmDbService.findCommonFilm(userId, friendId);
     }
-}
+
 
     @GetMapping("/search")
     public List<Film> findByTitleAndDirector(@RequestParam(value = "query") String query,
