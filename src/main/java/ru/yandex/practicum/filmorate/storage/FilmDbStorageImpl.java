@@ -18,7 +18,6 @@ import ru.yandex.practicum.filmorate.util.Const;
 
 import java.sql.*;
 import java.util.ArrayList;
-
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -230,7 +229,7 @@ public class FilmDbStorageImpl implements FilmDbStorage {
 
     @Override
     public void removeFilm(long filmId) {
-        if(findById(filmId) == null){
+        if (findById(filmId) == null) {
             throw new FilmNotFoundException("Фильм c id = " + filmId + " не существует");
         }
         String sqlQuery = "DELETE FROM films WHERE film_id = ?";
