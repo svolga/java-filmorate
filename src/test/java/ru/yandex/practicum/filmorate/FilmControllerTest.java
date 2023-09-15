@@ -8,10 +8,13 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.controller.DirectorController;
 import ru.yandex.practicum.filmorate.controller.FilmController;
+import ru.yandex.practicum.filmorate.controller.UserController;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.util.Const;
 
 import javax.validation.ConstraintViolationException;
@@ -29,6 +32,7 @@ public class FilmControllerTest {
 
     private final FilmController filmController;
     private final DirectorController directorController;
+    private final UserController userController;
 
     @Test
     void createFilm() {
@@ -151,6 +155,71 @@ public class FilmControllerTest {
         assertEquals(2, films.size());
     }
 
+    @Test
+    void shouldFindAllPopularFilms() {
+        //TODO настроить удаление всех фильмов из бд перед этим тестом
+        Director director1 = new Director(1, "Director 1");
+        director1 = directorController.createDirector(director1);
+
+        Director director2 = new Director(1, "Director 2");
+        director2 = directorController.createDirector(director2);
+
+        Film film1 = getTestFilm();
+        film1.getDirectors().add(director1);
+        film1.getGenres().add(new Genre(1, null));
+
+        Film film2 = getTestFilm();
+        film2.getDirectors().add(director1);
+        film2.setReleaseDate(film1.getReleaseDate());
+        film2.getGenres().add(new Genre(2, null));
+
+        Film film3 = getTestFilm();
+        film3.getDirectors().add(director2);
+        film3.setReleaseDate(film1.getReleaseDate().plusYears(1));
+        film3.getGenres().add(new Genre(2, null));
+
+        film1 = filmController.createFilm(film1);
+        film2 = filmController.createFilm(film2);
+        film3 = filmController.createFilm(film3);
+
+        User user1 = userController.createUser(getTestUser());
+        User user2 = userController.createUser(getTestUser());
+
+        filmController.addLike(film1.getId(), user1.getId());
+        filmController.addLike(film2.getId(), user1.getId());
+        filmController.addLike(film2.getId(), user2.getId());
+
+        film1 = filmController.findFilm(film1.getId());
+        film2 = filmController.findFilm(film2.getId());
+        film3 = filmController.findFilm(film3.getId());
+
+        List<Film> films = filmController.findAllPopular(10, 2L, null);
+        assertEquals(2, films.size(),
+                "Неправильный размер массива фильмов [count 10, genreId 2, year null]");
+        assertEquals(film2, films.get(0),
+                "Неправильный фильм в первой ячейке массива [count 10, genreId 2, year null]");
+        assertEquals(film3, films.get(1),
+                "Неправильный фильм во второй ячейке массива [count 10, genreId 2, year null]");
+
+        films = filmController.findAllPopular(1, 2L, null);
+        assertEquals(1, films.size(),
+                "Неправильный размер массива фильмов [count 1, genreId 2, year null]");
+
+        films = filmController.findAllPopular(10, null, 1967);
+        assertEquals(2, films.size(),
+                "Неправильный размер массива фильмов [count 10, genreId null, year 1967]");
+        assertEquals(film2, films.get(0),
+                "Неправильный фильм в первой ячейке массива [count 10, genreId null, year 1967]");
+        assertEquals(film1, films.get(1),
+                "Неправильный фильм во второй ячейке массива [count 10, genreId null, year 1967]");
+
+        films = filmController.findAllPopular(10, 2L, 1967);
+        assertEquals(1, films.size(),
+                "Неправильный размер массива фильмов [count 10, genreId 2, year 1967]");
+        assertEquals(film2, films.get(0),
+                "Неправильный фильм в первой ячейке массива [count 10, genreId 2, year 1967]");
+    }
+
     private Film getTestFilm() {
         return Film.builder()
                 .name("nisi eiusmod")
@@ -160,4 +229,12 @@ public class FilmControllerTest {
                 .build();
     }
 
+    private User getTestUser() {
+        return User.builder()
+                .login("Login")
+                .name("Name")
+                .email("mail@mail.ru")
+                .birthday(LocalDate.parse("1946-08-20", DateTimeFormatter.ofPattern(Const.DATE_FORMAT)))
+                .build();
+    }
 }
