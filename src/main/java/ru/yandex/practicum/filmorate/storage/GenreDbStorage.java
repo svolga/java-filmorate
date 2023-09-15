@@ -6,7 +6,7 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import java.util.List;
 
 public interface GenreDbStorage extends AbstractStorageGetter<Genre> {
-    public List<Genre> findByFilm(long filmId);
+    List<Genre> findByFilm(long filmId);
 
     void createFilmGenre(Film film);
 
