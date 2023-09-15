@@ -178,15 +178,7 @@ public class FilmDbStorageImpl implements FilmDbStorage {
                 "INTERSECT SELECT film_id FROM likes WHERE user_id = ? )";
 
         List<Film> films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, userId, friendId);
-//
-//        films = films.stream()
-//                .map(film -> {
-//                    getOtherLinks(film);
-//                    return film;
-//                })
-//                .collect(Collectors.toList());
-
-        return films;
+        return getOtherLinks(films);
     }
 
     public List<Film> findDirectorsFilmsLikeSorted(long id) {
@@ -260,6 +252,5 @@ public class FilmDbStorageImpl implements FilmDbStorage {
                 .mpa(Mpa.builder().id(rs.getInt("rating_id")).name(rs.getString("mpa_name")).build())
                 .build();
     }
-
 }
 
