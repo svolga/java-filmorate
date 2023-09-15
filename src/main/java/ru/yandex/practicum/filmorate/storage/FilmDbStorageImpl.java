@@ -22,6 +22,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -34,6 +35,7 @@ public class FilmDbStorageImpl implements FilmDbStorage {
 
     private final JdbcTemplate jdbcTemplate;
     private final GenreDbStorage genreDbStorage;
+    private final LikeDbStorage<Long, Long> likeDbStorage;
     private final DirectorDbStorage directorDbStorage;
 
 
@@ -108,6 +110,22 @@ public class FilmDbStorageImpl implements FilmDbStorage {
         } catch (EmptyResultDataAccessException e) {
             throw new FilmNotFoundException(String.format("Фильм с id = %d не найден", id));
         }
+    }
+
+
+    @Override
+    public List<Film> getLikedFilms(long userId) {
+        String sqlQuery = "SELECT f.*, m.name AS mpa_name \n" +
+                "                FROM films f \n" +
+                "                LEFT JOIN mpas m ON f.rating_id = m.rating_id\n" +
+                "                LEFT JOIN likes l ON l.film_id = f.film_id\n" +
+                "                WHERE l.user_id = ? ";
+
+        List<Film> films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, userId);
+
+        return films.stream()
+                .peek(this::getOtherLinks)
+                .collect(Collectors.toList());
     }
 
     private void getOtherLinks(Film film) {

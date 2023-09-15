@@ -17,5 +17,6 @@ public interface FilmDbStorage extends AbstractStorage<Film> {
     List<Film> findDirectorsFilmsLikeSorted(long id);
 
     void removeFilm(long filmId);
-}
 
+    List<Film> getLikedFilms(long userId);
+}

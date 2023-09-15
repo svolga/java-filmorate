@@ -5,13 +5,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FeedDbStorage;
+import ru.yandex.practicum.filmorate.storage.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.FriendDbStorage;
 import ru.yandex.practicum.filmorate.storage.UserDbStorage;
 
 import javax.validation.Valid;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @AllArgsConstructor
@@ -22,6 +27,9 @@ public class UserDbService {
     private final UserDbStorage userDbStorage;
 
     private final FriendDbStorage friendDbStorage;
+
+    private final FilmDbStorage filmDbStorage;
+
     private final FeedDbStorage feedDbStorage;
 
     public User create(@Valid User user) {
@@ -68,4 +76,26 @@ public class UserDbService {
     public void removeUserById(long userId) {
         userDbStorage.removeUserById(userId);
     }
+
+    public List<Film> findRecommendations(long id) {
+        List<User> users = getAll();
+        List<Film> userFilms = filmDbStorage.getLikedFilms(id);
+        HashMap<Long, Integer> counter = new HashMap<>();
+
+        for (User user : users) {
+            if (user.getId() != id) {
+                List<Film> userToFindFilms = filmDbStorage.getLikedFilms(user.getId());
+                userToFindFilms.retainAll(userFilms);
+                counter.put(user.getId(), userToFindFilms.size());
+            }
+        }
+
+        Long commonUserId = Collections.max(counter.entrySet(), Map.Entry.comparingByValue()).getKey();
+        List<Film> commonUserFilms = filmDbStorage.getLikedFilms(commonUserId);
+
+        commonUserFilms.removeAll(userFilms);
+
+        return commonUserFilms;
+    }
+
 }

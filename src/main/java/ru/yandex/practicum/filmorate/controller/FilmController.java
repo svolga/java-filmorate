@@ -79,7 +79,6 @@ public class FilmController {
         return filmDbService.findCommonFilm(userId, friendId);
     }
 
-
     @GetMapping("/search")
     public List<Film> findByTitleAndDirector(@RequestParam(value = "query") String query,
                                              @RequestParam(value = "by") String by) {

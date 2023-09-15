@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.FeedDbService;
@@ -88,4 +89,11 @@ public class UserController {
         log.info("Поиск feeds для пользователя с id -->{}", id);
         return feedDbService.findByUserId(id);
     }
+
+    @GetMapping("/{id}/recommendations")
+    public List<Film> findRecommendations(@PathVariable long id) {
+        log.info("Вывод рекомендаций для пользователя с id -->{}", id);
+        return userDbService.findRecommendations(id);
+    }
+
 }
