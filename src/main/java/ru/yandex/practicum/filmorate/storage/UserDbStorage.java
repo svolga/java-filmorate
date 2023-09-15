@@ -6,9 +6,9 @@ import java.util.List;
 
 public interface UserDbStorage extends AbstractStorage<User> {
 
-    public List<User> findAllFriends(long id);
+    List<User> findAllFriends(long id);
 
-    public List<User> findCommonFriends(long id, long friendId);
+    List<User> findCommonFriends(long id, long friendId);
 
     void removeUserById(long userId);
 }
