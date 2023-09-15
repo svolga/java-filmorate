@@ -64,9 +64,17 @@ public class FilmController {
         return filmDbService.findAllPopular(count, genreId, year);
     }
 
+    @GetMapping("/common")
+    public List<Film> findCommonFilm(@RequestParam(value = "userId") long userId,
+                                     @RequestParam(value = "friendId") long friendId) {
+        log.info("Найти список общих фильмов у пользователей с id --> {} и с id --> {}.", userId, friendId);
+        return filmDbService.findCommonFilm(userId, friendId);
+    }
+}
+
     @GetMapping("/search")
-    public List<Film> findByTitleAndDirector(@RequestParam(value = "query", required = true) String query,
-                                             @RequestParam(value = "by", required = true) String by) {
+    public List<Film> findByTitleAndDirector(@RequestParam(value = "query") String query,
+                                             @RequestParam(value = "by") String by) {
         log.info("Поиск -->{} фильма по названию и режисеру -->{} ", query, by);
         return filmDbService.findByTitleAndDirector(query, by);
     }
@@ -78,5 +86,10 @@ public class FilmController {
         return filmDbService.findDirectorsFilms(directorId, sortBy);
     }
 
-
+    @DeleteMapping("/{filmId}")
+    public void removeFilmById(@PathVariable long filmId) {
+        log.info("Удалить фильм с id --> {}", filmId);
+        filmDbService.removeFilmById(filmId);
+    }
 }
+

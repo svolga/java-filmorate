@@ -94,6 +94,15 @@ public class UserDbStorageImpl implements UserDbStorage {
         return jdbcTemplate.query(sqlQuery, this::mapRowToUser, id, friendId);
     }
 
+    @Override
+    public void removeUserById(long userId) {
+        if(findById(userId) == null){
+            throw new UserNotFoundException(String.format("User с id = " + userId + " не найден"));
+        }
+        String sqlQuery = "DELETE FROM users WHERE user_id = ?";
+        jdbcTemplate.update(sqlQuery, userId);
+    }
+
     private User mapRowToUser(ResultSet rs, int rowNum) throws SQLException {
         return User.builder()
                 .id(rs.getLong("user_id"))

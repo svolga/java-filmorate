@@ -18,6 +18,7 @@ import ru.yandex.practicum.filmorate.util.Const;
 
 import java.sql.*;
 import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -190,6 +191,26 @@ public class FilmDbStorageImpl implements FilmDbStorage {
     }
 
     @Override
+    public List<Film> findCommonFilm(long userId, long friendId) {
+        String sqlQuery = "SELECT f.*, m.name AS mpa_name " +
+                "FROM films f " +
+                "LEFT JOIN mpas m ON f.rating_id = m.rating_id " +
+                "WHERE f.film_id IN " +
+                "(SELECT film_id FROM likes WHERE user_id = ? " +
+                "INTERSECT SELECT film_id FROM likes WHERE user_id = ? )";
+
+        List<Film> films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, userId, friendId);
+//
+//        films = films.stream()
+//                .map(film -> {
+//                    getOtherLinks(film);
+//                    return film;
+//                })
+//                .collect(Collectors.toList());
+
+        return films;
+    }
+
     public List<Film> findDirectorsFilmsLikeSorted(long id) {
         directorDbStorage.findById(id);
         String sqlQuery = "SELECT * " +
@@ -205,6 +226,15 @@ public class FilmDbStorageImpl implements FilmDbStorage {
         List<Film> films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, id);
 
         return getOtherLinks(films);
+    }
+
+    @Override
+    public void removeFilm(long filmId) {
+        if(findById(filmId) == null){
+            throw new FilmNotFoundException("Фильм c id = " + filmId + " не существует");
+        }
+        String sqlQuery = "DELETE FROM films WHERE film_id = ?";
+        jdbcTemplate.update(sqlQuery, filmId);
     }
 
     @Override
@@ -254,3 +284,4 @@ public class FilmDbStorageImpl implements FilmDbStorage {
     }
 
 }
+
