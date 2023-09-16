@@ -143,12 +143,10 @@ public class FilmDbStorageImpl implements FilmDbStorage {
                 .collect(Collectors.toList());
     }
 
-
     private List<Long> findLikedUsersByFilm(long filmId) {
         String sqlQuery = "SELECT user_id FROM likes WHERE film_id = ?";
         return jdbcTemplate.queryForList(sqlQuery, Long.class, filmId);
     }
-
 
     @Override
     public List<Film> findAllPopular(int count, Long genreId, Integer year) {
@@ -253,18 +251,18 @@ public class FilmDbStorageImpl implements FilmDbStorage {
     @Override
     public List<Film> findByFields(Set<String> fields, String query) {
 
-        StringBuilder sbSubQuery = new StringBuilder();
+        StringBuilder subQuery = new StringBuilder();
         List<Object> parameters = new ArrayList<>();
         String likeQuery = getLIkeQuery(query);
         parameters.add(likeQuery);
 
         if (fields.contains(Const.DIRECTOR_SEARCH) && fields.contains(Const.TITLE_SEARCH)) {
             parameters.add(likeQuery);
-            sbSubQuery.append(" AND (LOWER(f.name) LIKE ? OR LOWER(d.name) LIKE ?) ");
+            subQuery.append(" AND (LOWER(f.name) LIKE ? OR LOWER(d.name) LIKE ?) ");
         } else if (fields.contains(Const.DIRECTOR_SEARCH)) {
-            sbSubQuery.append(" AND LOWER(d.name) LIKE ? ");
+            subQuery.append(" AND LOWER(d.name) LIKE ? ");
         } else if (fields.contains(Const.TITLE_SEARCH)) {
-            sbSubQuery.append(" AND LOWER(f.name) LIKE ? ");
+            subQuery.append(" AND LOWER(f.name) LIKE ? ");
         }
 
         String sqlQuery = "SELECT DISTINCT vs.cnt, m.name AS mpa_name, f.* " +
@@ -273,11 +271,12 @@ public class FilmDbStorageImpl implements FilmDbStorage {
                 "LEFT JOIN mpas m ON f.rating_id = m.rating_id " +
                 "LEFT JOIN film_directors fd ON f.film_id = fd.film_id " +
                 "LEFT JOIN directors d ON d.director_id = fd.director_id " +
-                "WHERE 1 = 1 " + sbSubQuery +
+                "WHERE 1 = 1 " + subQuery +
                 "ORDER BY vs.cnt DESC";
 
         Object[] paramArray = parameters.toArray();
-        return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, paramArray);
+        List<Film> films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, paramArray);
+        return getOtherLinks(films);
     }
 
     private String getLIkeQuery(String query) {
