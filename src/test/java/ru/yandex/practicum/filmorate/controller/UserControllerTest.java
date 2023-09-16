@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate;
+package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Assertions;
@@ -31,6 +31,16 @@ class UserControllerTest {
     void createUser() {
         User user = userController.createUser(getUserTest());
         assertTrue(user.getId() > 0);
+    }
+
+    @Test
+    void createFriend() {
+        User user = userController.createUser(getUserTest());
+        User user2 = userController.createUser(getUserTest());
+        userController.addFriend(user.getId(), user2.getId());
+        List<User> friends = userController.findFriends(user.getId());
+
+        assertEquals(1, friends.size());
     }
 
     @Test
