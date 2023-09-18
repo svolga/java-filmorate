@@ -24,11 +24,10 @@ public class Review {
 
     @NonNull
     private Boolean isPositive;
+    private Long useful;
 
     @JsonProperty("isPositive")
     public Boolean getIsPositive() {
         return isPositive;
     }
-
-    private Long useful;
 }
