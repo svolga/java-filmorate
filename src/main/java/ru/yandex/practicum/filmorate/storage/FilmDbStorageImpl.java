@@ -37,6 +37,7 @@ public class FilmDbStorageImpl implements FilmDbStorage {
     private final GenreDbStorage genreDbStorage;
     private final LikeDbStorage<Long, Long> likeDbStorage;
     private final DirectorDbStorage directorDbStorage;
+    private final ReviewDbStorage reviewDbStorage;
 
 
     @Override
