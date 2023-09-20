@@ -16,12 +16,10 @@ public class LikeDbStorageImpl implements LikeDbStorage<Long, Long> {
 
     @Override
     public boolean createLike(Long filmId, Long userId) {
-        if (!isExistsLike(filmId, userId)) {
-            String sqlQuery = "INSERT INTO likes (film_id, user_id) values (?, ?)";
-            if (jdbcTemplate.update(sqlQuery, filmId, userId) > 0) {
-                eventDbStorage.create(Event.builder().userId(userId).entityId(filmId).eventType(EventType.LIKE).operation(Operation.ADD).build());
-                return true;
-            }
+        String sqlQuery = "MERGE INTO likes (film_id, user_id) values (?, ?)";
+        if (jdbcTemplate.update(sqlQuery, filmId, userId) > 0) {
+            eventDbStorage.create(Event.builder().userId(userId).entityId(filmId).eventType(EventType.LIKE).operation(Operation.ADD).build());
+            return true;
         }
         return false;
     }
