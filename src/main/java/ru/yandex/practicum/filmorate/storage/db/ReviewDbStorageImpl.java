@@ -105,7 +105,7 @@ public class ReviewDbStorageImpl implements ReviewDbStorage {
             }
             parameters.add(count);
             sqlQuery = "SELECT * FROM reviews " + subQuery +
-                       " ORDER BY useful DESC LIMIT ? ";
+                    " ORDER BY useful DESC LIMIT ? ";
 
             return jdbcTemplate.query(sqlQuery, this::mapRowToReview, parameters.toArray());
         } catch (EmptyResultDataAccessException e) {
