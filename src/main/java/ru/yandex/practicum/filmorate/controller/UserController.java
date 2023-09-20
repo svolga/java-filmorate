@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Feed;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.service.FeedDbService;
-import ru.yandex.practicum.filmorate.service.UserDbService;
+import ru.yandex.practicum.filmorate.service.db.FeedDbService;
+import ru.yandex.practicum.filmorate.service.db.UserDbService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -85,7 +85,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}/feed")
-    public List<Feed> findFieds(@PathVariable long id) {
+    public List<Event> findFeeds(@PathVariable long id) {
         log.info("Поиск feeds для пользователя с id -->{}", id);
         return feedDbService.findByUserId(id);
     }

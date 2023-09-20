@@ -14,10 +14,10 @@ public class Review {
     private long reviewId;
 
     @NonNull
-    private int filmId;
+    private long filmId;
 
     @NonNull
-    private int userId;
+    private long userId;
 
     @NonNull
     private String content;

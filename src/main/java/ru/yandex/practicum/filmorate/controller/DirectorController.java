@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.Director;
-import ru.yandex.practicum.filmorate.service.DirectorDbService;
+import ru.yandex.practicum.filmorate.service.db.DirectorDbService;
 
 import javax.validation.Valid;
 import java.util.List;

@@ -3,11 +3,19 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.exception.ReviewNotFoundException;
 import ru.yandex.practicum.filmorate.model.Review;
-import ru.yandex.practicum.filmorate.service.ReviewDbService;
+import ru.yandex.practicum.filmorate.service.db.ReviewDbService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -27,18 +35,15 @@ public class ReviewController {
 
     @PostMapping
     public Review addReview(@Valid @RequestBody Review review) {
-        boolean ans = review.getIsPositive();
-
         if (review.getUserId() < 0 || review.getFilmId() < 0) {
             throw new ReviewNotFoundException(String.valueOf(review.getUserId()));
         }
 
-        if (review.getUserId() == 0 || review.getFilmId() == 0 ||
-                review.getContent() == null || review.getIsPositive() == null) {
+        if (review.getUserId() == 0 || review.getFilmId() == 0 || review.getIsPositive() == null) {
             throw new IncorrectParameterException("Не все поля заполнены");
         }
 
-        Review request = reviewDbService.addReview(review);
+        Review request = reviewDbService.createReview(review);
         log.debug("Добавление пользователем id = {} отзыва к фильму id = {}", review.getUserId(), review.getFilmId());
         return request;
     }
@@ -53,7 +58,7 @@ public class ReviewController {
 
     @DeleteMapping("/{id}")
     public long deleteReviewById(@PathVariable long id) {
-        long request = reviewDbService.deleteReviewById(id);
+        long request = reviewDbService.removeReviewById(id);
         log.debug("Удаление отзыва id = {}", id);
         return request;
     }
@@ -94,14 +99,14 @@ public class ReviewController {
 
     @DeleteMapping("{id}/like/{userId}")
     public long deleteLikeReview(@PathVariable long id, @PathVariable int userId) {
-        long request = reviewDbService.deleteLikeReview(userId, id);
+        long request = reviewDbService.removeLikeReview(userId, id);
         log.debug("Пользователь id = {} удалил свой лайк отзыву id = {}", userId, id);
         return request;
     }
 
     @DeleteMapping("{id}/dislike/{userId}")
     public long deleteDislikeReview(@PathVariable long id, @PathVariable int userId) {
-        long request = reviewDbService.deleteDislikeReview(userId, id);
+        long request = reviewDbService.removeDislikeReview(userId, id);
         log.debug("Пользователь id = {} удалил свой дизлайк отзыву id = {}", userId, id);
         return request;
     }
