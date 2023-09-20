@@ -28,7 +28,7 @@ import java.util.Objects;
 public class ReviewDbStorageImpl implements ReviewDbStorage {
 
     private final JdbcTemplate jdbcTemplate;
-    private final EventDbStorage feedDbStorage;
+    private final EventDbStorage eventDbStorage;
 
     @Override
     public Review createReview(Review review) {
@@ -46,7 +46,7 @@ public class ReviewDbStorageImpl implements ReviewDbStorage {
             return stmt;
         }, keyHolder) > 0) {
             int id = Objects.requireNonNull(keyHolder.getKey()).intValue();
-            feedDbStorage.create(Event.builder().userId(review.getUserId()).entityId(id).eventType(EventType.REVIEW).operation(Operation.ADD).build());
+            eventDbStorage.create(Event.builder().userId(review.getUserId()).entityId(id).eventType(EventType.REVIEW).operation(Operation.ADD).build());
             return findReviewById(id);
         }
 
@@ -59,7 +59,7 @@ public class ReviewDbStorageImpl implements ReviewDbStorage {
         if (oldReview == null) {
             throw new ReviewNotFoundException("Review c id = " + review.getReviewId() + " не существует");
         }
-        feedDbStorage.create(Event.builder().userId(oldReview.getUserId()).entityId(review.getReviewId()).eventType(EventType.REVIEW).operation(Operation.UPDATE).build());
+        eventDbStorage.create(Event.builder().userId(oldReview.getUserId()).entityId(review.getReviewId()).eventType(EventType.REVIEW).operation(Operation.UPDATE).build());
 
         String sqlQuery = "UPDATE reviews SET content = ?, is_positive = ? WHERE review_id = ?";
         jdbcTemplate.update(sqlQuery, review.getContent(), review.getIsPositive(), review.getReviewId());
@@ -75,7 +75,7 @@ public class ReviewDbStorageImpl implements ReviewDbStorage {
 
         String sqlQuery = "DELETE FROM reviews WHERE review_id = ?";
         if (jdbcTemplate.update(sqlQuery, id) > 0) {
-            feedDbStorage.create(Event.builder().userId(review.getUserId()).entityId(review.getReviewId()).eventType(EventType.REVIEW).operation(Operation.REMOVE).build());
+            eventDbStorage.create(Event.builder().userId(review.getUserId()).entityId(review.getReviewId()).eventType(EventType.REVIEW).operation(Operation.REMOVE).build());
         }
         return id;
     }

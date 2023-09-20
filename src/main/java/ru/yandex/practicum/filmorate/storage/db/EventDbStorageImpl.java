@@ -90,7 +90,7 @@ public class EventDbStorageImpl implements EventDbStorage {
         try {
             return jdbcTemplate.query(sqlQuery, this::mapRowToEvent, userId);
         } catch (EmptyResultDataAccessException e) {
-            throw new EventNotFoundException(String.format("Feeds для пользователя с user_id = %d не найден", userId));
+            throw new EventNotFoundException(String.format("Events для пользователя с user_id = %d не найден", userId));
         }
     }
 

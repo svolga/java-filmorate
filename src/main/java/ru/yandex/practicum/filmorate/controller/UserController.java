@@ -15,7 +15,7 @@ import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.service.db.FeedDbService;
+import ru.yandex.practicum.filmorate.service.db.EventDbService;
 import ru.yandex.practicum.filmorate.service.db.UserDbService;
 
 import javax.validation.Valid;
@@ -29,7 +29,7 @@ import java.util.List;
 public class UserController {
 
     private final UserDbService userDbService;
-    private final FeedDbService feedDbService;
+    private final EventDbService eventDbService;
 
     @GetMapping
     public List<User> getAllUsers() {
@@ -85,9 +85,9 @@ public class UserController {
     }
 
     @GetMapping("/{id}/feed")
-    public List<Event> findFeeds(@PathVariable long id) {
-        log.info("Поиск feeds для пользователя с id -->{}", id);
-        return feedDbService.findByUserId(id);
+    public List<Event> findEvents(@PathVariable long id) {
+        log.info("Поиск events для пользователя с id -->{}", id);
+        return eventDbService.findByUserId(id);
     }
 
     @GetMapping("/{id}/recommendations")

@@ -10,13 +10,13 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
-public class FeedDbService {
+public class EventDbService {
 
-    private final EventDbStorage feedDbStorage;
+    private final EventDbStorage eventDbStorage;
     private final UserDbStorage userDbStorage;
 
     public List<Event> findByUserId(long userId) {
         userDbStorage.findById(userId);
-        return feedDbStorage.findByUserId(userId);
+        return eventDbStorage.findByUserId(userId);
     }
 }

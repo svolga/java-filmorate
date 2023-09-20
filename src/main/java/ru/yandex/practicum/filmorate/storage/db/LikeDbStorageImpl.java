@@ -12,14 +12,14 @@ import ru.yandex.practicum.filmorate.util.Operation;
 public class LikeDbStorageImpl implements LikeDbStorage<Long, Long> {
 
     private final JdbcTemplate jdbcTemplate;
-    private final EventDbStorage feedDbStorage;
+    private final EventDbStorage eventDbStorage;
 
     @Override
     public boolean createLike(Long filmId, Long userId) {
         if (!isExistsLike(filmId, userId)) {
             String sqlQuery = "INSERT INTO likes (film_id, user_id) values (?, ?)";
             if (jdbcTemplate.update(sqlQuery, filmId, userId) > 0) {
-                feedDbStorage.create(Event.builder().userId(userId).entityId(filmId).eventType(EventType.LIKE).operation(Operation.ADD).build());
+                eventDbStorage.create(Event.builder().userId(userId).entityId(filmId).eventType(EventType.LIKE).operation(Operation.ADD).build());
                 return true;
             }
         }
@@ -30,7 +30,7 @@ public class LikeDbStorageImpl implements LikeDbStorage<Long, Long> {
     public boolean removeLike(Long filmId, Long userId) {
         String sqlQuery = "DELETE FROM likes WHERE film_id = ? AND user_id = ?";
         if (jdbcTemplate.update(sqlQuery, filmId, userId) > 0) {
-            feedDbStorage.create(Event.builder().userId(userId).entityId(filmId).eventType(EventType.LIKE).operation(Operation.REMOVE).build());
+            eventDbStorage.create(Event.builder().userId(userId).entityId(filmId).eventType(EventType.LIKE).operation(Operation.REMOVE).build());
             return true;
         }
         return false;

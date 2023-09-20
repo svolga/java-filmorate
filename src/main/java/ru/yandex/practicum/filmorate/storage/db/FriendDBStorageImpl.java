@@ -12,14 +12,14 @@ import ru.yandex.practicum.filmorate.util.Operation;
 public class FriendDBStorageImpl implements FriendDbStorage {
 
     private final JdbcTemplate jdbcTemplate;
-    private final EventDbStorage feedDbStorage;
+    private final EventDbStorage eventDbStorage;
 
     @Override
     public boolean createFriend(long id, long friendId) {
         if (!isHasFriend(id, friendId)) {
             String sqlQuery = "INSERT INTO user_friends (user_id, friend_id) values (?, ?)";
             if (jdbcTemplate.update(sqlQuery, id, friendId) > 0) {
-                feedDbStorage.create(Event.builder().userId(id).entityId(friendId).eventType(EventType.FRIEND).operation(Operation.ADD).build());
+                eventDbStorage.create(Event.builder().userId(id).entityId(friendId).eventType(EventType.FRIEND).operation(Operation.ADD).build());
                 return true;
             }
         }
@@ -30,7 +30,7 @@ public class FriendDBStorageImpl implements FriendDbStorage {
     public boolean removeFriend(long id, long friendId) {
         String sqlQuery = "DELETE FROM user_friends WHERE user_id = ? AND friend_id = ?";
         if (jdbcTemplate.update(sqlQuery, id, friendId) > 0) {
-            feedDbStorage.create(Event.builder().userId(id).entityId(friendId).eventType(EventType.FRIEND).operation(Operation.REMOVE).build());
+            eventDbStorage.create(Event.builder().userId(id).entityId(friendId).eventType(EventType.FRIEND).operation(Operation.REMOVE).build());
             return true;
         }
         return false;

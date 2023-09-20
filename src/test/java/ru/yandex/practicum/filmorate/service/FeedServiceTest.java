@@ -1,10 +1,13 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
@@ -25,9 +28,26 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class FeedServiceTest {
 
-    private final EventDbStorage feedDbStorage;
+    private final EventDbStorage eventDbStorage;
     private final UserDbStorage userDbStorage;
     private final FilmDbStorage filmDbStorage;
+    private final JdbcTemplate jdbcTemplate;
+
+    @BeforeEach
+    void resetAll() {
+        jdbcTemplate.update("ALTER TABLE users " +
+                "ALTER COLUMN user_id RESTART WITH 1");
+        jdbcTemplate.update("DELETE FROM users");
+
+        jdbcTemplate.update("ALTER TABLE films " +
+                "ALTER COLUMN film_id RESTART WITH 1");
+        jdbcTemplate.update("DELETE FROM films");
+
+        jdbcTemplate.update("ALTER TABLE events " +
+                "ALTER COLUMN event_id RESTART WITH 1");
+        jdbcTemplate.update("DELETE FROM events ");
+    }
+
 
     @Test
     void createFeed() {
@@ -40,7 +60,7 @@ public class FeedServiceTest {
         assertEquals(1, user.getId());
         assertEquals(1, film.getId());
 
-        Event feed = feedDbStorage.create(
+        Event feed = eventDbStorage.create(
                 Event.builder()
                         .userId(user.getId())
                         .entityId(film.getId())
