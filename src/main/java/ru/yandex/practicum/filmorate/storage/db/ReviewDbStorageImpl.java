@@ -145,8 +145,8 @@ public class ReviewDbStorageImpl implements ReviewDbStorage {
     private Review mapRowToReview(ResultSet resultSet, int rowNum) throws SQLException {
         return Review.builder()
                 .reviewId(resultSet.getLong("review_id"))
-                .filmId(resultSet.getInt("film_id"))
-                .userId(resultSet.getInt("user_id"))
+                .filmId(resultSet.getLong("film_id"))
+                .userId(resultSet.getLong("user_id"))
                 .content(resultSet.getString("content"))
                 .isPositive(resultSet.getBoolean("is_positive"))
                 .useful(resultSet.getLong("useful"))

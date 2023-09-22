@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
-import ru.yandex.practicum.filmorate.exception.ReviewNotFoundException;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.service.db.ReviewDbService;
 
@@ -35,14 +33,6 @@ public class ReviewController {
 
     @PostMapping
     public Review addReview(@Valid @RequestBody Review review) {
-        if (review.getUserId() < 0 || review.getFilmId() < 0) {
-            throw new ReviewNotFoundException(String.valueOf(review.getUserId()));
-        }
-
-        if (review.getUserId() == 0 || review.getFilmId() == 0 || review.getIsPositive() == null) {
-            throw new IncorrectParameterException("Не все поля заполнены");
-        }
-
         Review request = reviewDbService.createReview(review);
         log.debug("Добавление пользователем id = {} отзыва к фильму id = {}", review.getUserId(), review.getFilmId());
         return request;
