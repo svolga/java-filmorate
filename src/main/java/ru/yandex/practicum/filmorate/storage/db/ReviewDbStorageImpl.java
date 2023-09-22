@@ -107,31 +107,27 @@ public class ReviewDbStorageImpl implements ReviewDbStorage {
     }
 
     @Override
-    public long likeReview(int userId, long id) {
+    public void likeReview(int userId, long id) {
         String sql = "UPDATE reviews SET useful = useful + 1 WHERE review_id = ?";
         jdbcTemplate.update(sql, id);
-        return id;
     }
 
     @Override
-    public long dislikeReview(int userId, long id) {
+    public void dislikeReview(int userId, long id) {
         String sql = "UPDATE reviews SET useful = useful - 1 WHERE review_id = ?";
         jdbcTemplate.update(sql, id);
-        return id;
     }
 
     @Override
-    public long removeLikeReview(int userId, long id) {
+    public void removeLikeReview(int userId, long id) {
         String sql = "UPDATE reviews SET useful = useful - 1 WHERE review_id = ?";
         jdbcTemplate.update(sql, id);
-        return id;
     }
 
     @Override
-    public long removeDislikeReview(int userId, long id) {
+    public void removeDislikeReview(int userId, long id) {
         String sql = "UPDATE reviews SET useful = useful + 1 WHERE review_id = ?";
         jdbcTemplate.update(sql, id);
-        return id;
     }
 
     private Review mapRowToReview(ResultSet resultSet, int rowNum) throws SQLException {

@@ -74,30 +74,26 @@ public class ReviewController {
     }
 
     @PutMapping("{id}/like/{userId}")
-    public long likeReview(@PathVariable long id, @PathVariable int userId) {
-        long request = reviewDbService.likeReview(userId, id);
+    public void likeReview(@PathVariable long id, @PathVariable int userId) {
+        reviewDbService.likeReview(userId, id);
         log.debug("Пользователь id = {} поставил лайк отзыву id = {}", userId, id);
-        return request;
     }
 
     @PutMapping("{id}/dislike/{userId}")
-    public long dislikeReview(@PathVariable long id, @PathVariable int userId) {
-        long request = reviewDbService.dislikeReview(userId, id);
+    public void dislikeReview(@PathVariable long id, @PathVariable int userId) {
+        reviewDbService.dislikeReview(userId, id);
         log.debug("Пользователь id = {} поставил дизлайк отзыву id = {}", userId, id);
-        return request;
     }
 
     @DeleteMapping("{id}/like/{userId}")
-    public long deleteLikeReview(@PathVariable long id, @PathVariable int userId) {
-        long request = reviewDbService.removeLikeReview(userId, id);
+    public void deleteLikeReview(@PathVariable long id, @PathVariable int userId) {
+        reviewDbService.removeLikeReview(userId, id);
         log.debug("Пользователь id = {} удалил свой лайк отзыву id = {}", userId, id);
-        return request;
     }
 
     @DeleteMapping("{id}/dislike/{userId}")
-    public long deleteDislikeReview(@PathVariable long id, @PathVariable int userId) {
-        long request = reviewDbService.removeDislikeReview(userId, id);
+    public void deleteDislikeReview(@PathVariable long id, @PathVariable int userId) {
+        reviewDbService.removeDislikeReview(userId, id);
         log.debug("Пользователь id = {} удалил свой дизлайк отзыву id = {}", userId, id);
-        return request;
     }
 }

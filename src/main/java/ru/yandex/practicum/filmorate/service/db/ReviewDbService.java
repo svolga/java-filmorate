@@ -48,27 +48,27 @@ public class ReviewDbService {
         return reviewDbStorage.findAllReviews(filmId, count);
     }
 
-    public long likeReview(int userId, long id) {
+    public void likeReview(int userId, long id) {
         userDbStorage.findById(userId);
         findReviewById(id);
-        return reviewDbStorage.likeReview(userId, id);
+        reviewDbStorage.likeReview(userId, id);
     }
 
-    public long dislikeReview(int userId, long id) {
+    public void dislikeReview(int userId, long id) {
         userDbStorage.findById(userId);
         findReviewById(id);
-        return reviewDbStorage.dislikeReview(userId, id);
+        reviewDbStorage.dislikeReview(userId, id);
     }
 
-    public long removeLikeReview(int userId, long id) {
+    public void removeLikeReview(int userId, long id) {
         userDbStorage.findById(userId);
         findReviewById(id);
-        return reviewDbStorage.removeLikeReview(userId, id);
+        reviewDbStorage.removeLikeReview(userId, id);
     }
 
-    public long removeDislikeReview(int userId, long id) {
+    public void removeDislikeReview(int userId, long id) {
         userDbStorage.findById(userId);
         findReviewById(id);
-        return reviewDbStorage.removeDislikeReview(userId, id);
+        reviewDbStorage.removeDislikeReview(userId, id);
     }
 }
