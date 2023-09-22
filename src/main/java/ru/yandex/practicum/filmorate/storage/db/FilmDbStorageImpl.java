@@ -212,12 +212,15 @@ public class FilmDbStorageImpl implements FilmDbStorage {
 
     @Override
     public List<Film> findCommonFilm(long userId, long friendId) {
-        String sqlQuery = "SELECT f.*, m.name AS mpa_name " +
-                "FROM films f " +
-                "LEFT JOIN mpas m ON f.rating_id = m.rating_id " +
-                "WHERE f.film_id IN " +
-                "(SELECT film_id FROM likes WHERE user_id = ? " +
-                "INTERSECT SELECT film_id FROM likes WHERE user_id = ? )";
+        String sqlQuery =
+                "WITH " +
+                        "intersects AS ( " +
+                        "SELECT film_id FROM likes WHERE user_id = ? " +
+                        "INTERSECT SELECT film_id FROM likes WHERE user_id = ? ) " +
+                        "SELECT f.*, m.name AS mpa_name " +
+                        "FROM films f " +
+                        "LEFT JOIN mpas m ON f.rating_id = m.rating_id " +
+                        "RIGHT JOIN intersects its ON f.film_id = its.film_id ";
 
         List<Film> films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, userId, friendId);
         return getOtherLinks(films);

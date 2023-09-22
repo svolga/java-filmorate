@@ -51,8 +51,7 @@ public class EventDbStorageImpl implements EventDbStorage {
     public List<Event> getAll() {
         String sqlQuery = "SELECT * " +
                 "FROM events " +
-                "ORDER BY updated_at " +
-                "LIMIT 100";
+                "ORDER BY updated_at ";
 
         return jdbcTemplate.query(sqlQuery, this::mapRowToEvent);
     }
