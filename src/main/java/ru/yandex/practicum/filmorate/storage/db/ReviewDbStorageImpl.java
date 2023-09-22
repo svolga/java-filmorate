@@ -56,23 +56,15 @@ public class ReviewDbStorageImpl implements ReviewDbStorage {
     @Override
     public Review updateReview(Review review) {
         Review oldReview = findReviewById(review.getReviewId());
-        if (oldReview == null) {
-            throw new ReviewNotFoundException("Review c id = " + review.getReviewId() + " не существует");
-        }
-        eventDbStorage.create(Event.builder().userId(oldReview.getUserId()).entityId(review.getReviewId()).eventType(EventType.REVIEW).operation(Operation.UPDATE).build());
-
         String sqlQuery = "UPDATE reviews SET content = ?, is_positive = ? WHERE review_id = ?";
         jdbcTemplate.update(sqlQuery, review.getContent(), review.getIsPositive(), review.getReviewId());
+        eventDbStorage.create(Event.builder().userId(oldReview.getUserId()).entityId(review.getReviewId()).eventType(EventType.REVIEW).operation(Operation.UPDATE).build());
         return findReviewById(review.getReviewId());
     }
 
     @Override
     public long removeReviewById(long id) {
         Review review = findReviewById(id);
-        if (review == null) {
-            throw new ReviewNotFoundException("Review c id = " + id + " не существует");
-        }
-
         String sqlQuery = "DELETE FROM reviews WHERE review_id = ?";
         if (jdbcTemplate.update(sqlQuery, id) > 0) {
             eventDbStorage.create(Event.builder().userId(review.getUserId()).entityId(review.getReviewId()).eventType(EventType.REVIEW).operation(Operation.REMOVE).build());
