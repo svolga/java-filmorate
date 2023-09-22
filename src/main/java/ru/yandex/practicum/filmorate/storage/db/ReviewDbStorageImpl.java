@@ -8,6 +8,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.exception.ReviewFeedbackAlreadyExistsException;
+import ru.yandex.practicum.filmorate.exception.ReviewFeedbackNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ReviewNotFoundException;
 import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Review;
@@ -106,28 +108,84 @@ public class ReviewDbStorageImpl implements ReviewDbStorage {
         }
     }
 
+    private int findMarkIfExists(int userId, long reviewId) {
+        String sql = "SELECT mark FROM user_reviews  WHERE user_id = ? AND review_id = ?";
+        try {
+            return jdbcTemplate.queryForObject(sql, Integer.class, userId, reviewId);
+        } catch (EmptyResultDataAccessException e) {
+            return 0;
+        }
+    }
+
     @Override
     public void likeReview(int userId, long id) {
-        String sql = "UPDATE reviews SET useful = useful + 1 WHERE review_id = ?";
-        jdbcTemplate.update(sql, id);
+        int mark = findMarkIfExists(userId, id);
+        if (mark == 0) {
+            String sql = "UPDATE reviews SET useful = useful + 1 WHERE review_id = ?";
+            jdbcTemplate.update(sql, id);
+            sql = "INSERT INTO user_reviews (user_id, review_id, mark) " +
+                    "Values (?, ?, 1)";
+            jdbcTemplate.update(sql, userId, id);
+        } else if (mark == -1) {
+            String sql = "UPDATE reviews SET useful = useful + 2 WHERE review_id = ?";
+            jdbcTemplate.update(sql, id);
+            sql = "MERGE INTO user_reviews (user_id, review_id, mark) " +
+                    "Values (?, ?, 1)";
+            jdbcTemplate.update(sql, userId, id);
+        } else {
+            throw new ReviewFeedbackAlreadyExistsException(
+                    String.format("Лайк отзыву с id = %s от пользователя с id = %s уже поставлен!", id, userId));
+        }
     }
 
     @Override
     public void dislikeReview(int userId, long id) {
-        String sql = "UPDATE reviews SET useful = useful - 1 WHERE review_id = ?";
-        jdbcTemplate.update(sql, id);
+        int mark = findMarkIfExists(userId, id);
+        if (mark == 0) {
+            String sql = "UPDATE reviews SET useful = useful - 1 WHERE review_id = ?";
+            jdbcTemplate.update(sql, id);
+            sql = "INSERT INTO user_reviews (user_id, review_id, mark) " +
+                    "Values (?, ?, -1)";
+            jdbcTemplate.update(sql, userId, id);
+        } else if (mark == 1) {
+            String sql = "UPDATE reviews SET useful = useful - 2 WHERE review_id = ?";
+            jdbcTemplate.update(sql, id);
+            sql = "MERGE INTO user_reviews (user_id, review_id, mark) " +
+                    "Values (?, ?, -1)";
+            jdbcTemplate.update(sql, userId, id);
+        } else {
+            throw new ReviewFeedbackAlreadyExistsException(
+                    String.format("Дизлайк отзыву с id = %s от пользователя с id = %s уже поставлен!", id, userId));
+        }
     }
 
     @Override
     public void removeLikeReview(int userId, long id) {
+        int mark = findMarkIfExists(userId, id);
+        if (mark != 1) {
+            throw new ReviewFeedbackNotFoundException(
+                    String.format("Лайк отзыву с id = %s от пользователя с id = %s не найден!", id, userId));
+        }
         String sql = "UPDATE reviews SET useful = useful - 1 WHERE review_id = ?";
         jdbcTemplate.update(sql, id);
+        removeReviewFeedback(userId, id);
     }
 
     @Override
     public void removeDislikeReview(int userId, long id) {
+        int mark = findMarkIfExists(userId, id);
+        if (mark != -1) {
+            throw new ReviewFeedbackNotFoundException(
+                    String.format("Дизлайк отзыву с id = %s от пользователя с id = %s не найден!", id, userId));
+        }
         String sql = "UPDATE reviews SET useful = useful + 1 WHERE review_id = ?";
         jdbcTemplate.update(sql, id);
+        removeReviewFeedback(userId, id);
+    }
+
+    private void removeReviewFeedback(int userId, long id) {
+        String sql = "DELETE FROM user_reviews WHERE user_id = ? AND review_id = ? ";
+        jdbcTemplate.update(sql, userId, id);
     }
 
     private Review mapRowToReview(ResultSet resultSet, int rowNum) throws SQLException {
