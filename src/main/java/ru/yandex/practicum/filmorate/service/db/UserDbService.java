@@ -81,7 +81,7 @@ public class UserDbService {
             recommendations.addAll(filmDbStorage.findRecommendedFilms(id, commonUserId));
         }
 
-        return new ArrayList<Film>(recommendations);
+        return new ArrayList<>(recommendations);
     }
 
 }

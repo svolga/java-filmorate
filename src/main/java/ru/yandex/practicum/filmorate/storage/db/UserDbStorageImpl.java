@@ -75,26 +75,31 @@ public class UserDbStorageImpl implements UserDbStorage {
 
     @Override
     public List<User> findAllFriends(long id) {
-        String sqlQuery = "SELECT * FROM users " +
-                "WHERE user_id IN (SELECT friend_id FROM user_friends WHERE user_id = ?)";
+        String sqlQuery = "SELECT * FROM users u " +
+                "LEFT JOIN user_friends uf ON u.user_id = uf.friend_id " +
+                "WHERE uf.user_id = ? ";
+
         return jdbcTemplate.query(sqlQuery, this::mapRowToUser, id);
     }
 
     @Override
     public List<User> findCommonFriends(long id, long friendId) {
-        String sqlQuery = "SELECT * FROM users " +
-                "WHERE user_id IN" +
-                " ( SELECT friend_id FROM user_friends WHERE user_id = ? " +
-                "INTERSECT SELECT friend_id FROM user_friends WHERE user_id = ? )";
+        String sqlQuery = "WITH " +
+                "intersects AS (SELECT friend_id FROM user_friends WHERE user_id = ? " +
+                "INTERSECT SELECT friend_id FROM user_friends WHERE user_id = ?) " +
+                "SELECT * " +
+                "FROM users u " +
+                "RIGHT JOIN intersects its ON its.friend_id = u.user_id";
 
         return jdbcTemplate.query(sqlQuery, this::mapRowToUser, id, friendId);
     }
 
     @Override
     public List<Long> findCommonUsersIds(long id) {
-        String sqlQuery = "SELECT l.user_id FROM likes l " +
-                "WHERE l.film_id IN " +
-                "(SELECT film_id FROM likes WHERE user_id = ? )";
+        String sqlQuery = "SELECT DISTINCT l.user_id " +
+                "FROM likes l " +
+                "JOIN likes lk ON lk.film_id = l.film_id " +
+                "WHERE lk.user_id = ? ";
 
         return jdbcTemplate.queryForList(sqlQuery, Long.TYPE, id);
     }

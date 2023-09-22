@@ -111,7 +111,7 @@ public class ReviewDbStorageImpl implements ReviewDbStorage {
     private int findMarkIfExists(int userId, long reviewId) {
         String sql = "SELECT mark FROM user_reviews  WHERE user_id = ? AND review_id = ?";
         try {
-            return jdbcTemplate.queryForObject(sql, Integer.class, userId, reviewId);
+            return Objects.requireNonNull(jdbcTemplate.queryForObject(sql, Integer.class, userId, reviewId));
         } catch (EmptyResultDataAccessException e) {
             return 0;
         }
