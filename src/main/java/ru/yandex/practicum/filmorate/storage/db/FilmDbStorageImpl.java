@@ -194,7 +194,6 @@ public class FilmDbStorageImpl implements FilmDbStorage {
 
     @Override
     public List<Film> findDirectorsFilmsYearSorted(long id) {
-        directorDbStorage.findById(id);
         String sqlQuery = "SELECT * " +
                 "FROM films f " +
                 "LEFT JOIN  (SELECT film_id, COUNT(l.*) AS cnt FROM likes l " +
@@ -227,7 +226,6 @@ public class FilmDbStorageImpl implements FilmDbStorage {
     }
 
     public List<Film> findDirectorsFilmsLikeSorted(long id) {
-        directorDbStorage.findById(id);
         String sqlQuery = "SELECT * " +
                 "FROM films f " +
                 "LEFT JOIN  (SELECT film_id, COUNT(l.*) AS cnt FROM likes l " +
@@ -245,9 +243,6 @@ public class FilmDbStorageImpl implements FilmDbStorage {
 
     @Override
     public long removeById(long filmId) {
-        if (findById(filmId) == null) {
-            throw new FilmNotFoundException("Фильм c id = " + filmId + " не существует");
-        }
         String sqlQuery = "DELETE FROM films WHERE film_id = ?";
         jdbcTemplate.update(sqlQuery, filmId);
         return filmId;

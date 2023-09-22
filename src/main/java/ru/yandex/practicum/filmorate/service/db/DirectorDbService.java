@@ -21,6 +21,7 @@ public class DirectorDbService {
     }
 
     public Director update(Director director) throws ValidateException {
+        directorDbStorage.findById(director.getId());
         return directorDbStorage.update(director);
     }
 
@@ -33,6 +34,7 @@ public class DirectorDbService {
     }
 
     public void deleteDirectorById(long id) {
+        directorDbStorage.findById(id);
         directorDbStorage.removeById(id);
     }
 }

@@ -46,9 +46,6 @@ public class DirectorDbStorageImpl implements DirectorDbStorage {
 
     @Override
     public Director update(Director director) throws ValidateException {
-        if (findById(director.getId()) == null) {
-            throw new DirectorNotFoundException("Режиссёр c id = " + director.getId() + " не существует");
-        }
         String sqlQuery = "UPDATE directors " +
                 "SET name = ? " +
                 "WHERE director_id = ?";
@@ -88,9 +85,6 @@ public class DirectorDbStorageImpl implements DirectorDbStorage {
 
     @Override
     public long removeById(long id) {
-        if (findById(id) == null) {
-            throw new DirectorNotFoundException("Режиссёр c id = " + id + " не существует");
-        }
         String sqlQuery = "DELETE FROM directors " +
                 "WHERE director_id = ?";
         jdbcTemplate.update(sqlQuery, id);

@@ -4,9 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.db.DirectorDbStorage;
 import ru.yandex.practicum.filmorate.storage.db.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.db.LikeDbStorage;
 import ru.yandex.practicum.filmorate.storage.db.UserDbStorage;
@@ -25,7 +27,8 @@ public class FilmDbService {
     private final FilmDbStorage filmDbStorage;
     private final UserDbStorage userDbStorage;
     private final LikeDbStorage<Long, Long> likeDbStorage;
-
+    private final DirectorDbStorage directorDbStorage;
+    
     public Film create(Film film) {
         return filmDbStorage.create(film);
     }
@@ -59,6 +62,8 @@ public class FilmDbService {
     }
 
     public List<Film> findCommonFilm(long userId, long friendId) {
+        userDbStorage.findById(userId);
+        userDbStorage.findById(friendId);
         return filmDbStorage.findCommonFilm(userId, friendId);
     }
 
@@ -75,6 +80,7 @@ public class FilmDbService {
     }
 
     public List<Film> findDirectorsFilms(long id, String sortBy) {
+        directorDbStorage.findById(id);
         if (sortBy.equals("year")) {
             return filmDbStorage.findDirectorsFilmsYearSorted(id);
         } else if (sortBy.equals("likes")) {
@@ -86,6 +92,7 @@ public class FilmDbService {
     }
 
     public void removeFilmById(long filmId) {
+        findFilmById(filmId);
         filmDbStorage.removeById(filmId);
     }
 }
