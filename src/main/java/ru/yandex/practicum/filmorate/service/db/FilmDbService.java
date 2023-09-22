@@ -27,7 +27,7 @@ public class FilmDbService {
     private final UserDbStorage userDbStorage;
     private final LikeDbStorage<Long, Long> likeDbStorage;
     private final DirectorDbStorage directorDbStorage;
-    
+
     public Film create(Film film) {
         return filmDbStorage.create(film);
     }
