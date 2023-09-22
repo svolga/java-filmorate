@@ -18,5 +18,5 @@ public interface FilmDbStorage extends AbstractStorage<Film>, AbstractStorageRem
 
     List<Film> findDirectorsFilmsLikeSorted(long id);
 
-    List<Film> getLikedFilms(long userId);
+    List<Film> findRecommendedFilms(long userId, long commonUserId);
 }

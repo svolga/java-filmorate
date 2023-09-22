@@ -91,6 +91,15 @@ public class UserDbStorageImpl implements UserDbStorage {
     }
 
     @Override
+    public List<Long> findCommonUsersIds(long id) {
+        String sqlQuery = "SELECT l.user_id FROM likes l " +
+                "WHERE l.film_id IN " +
+                "(SELECT film_id FROM likes WHERE user_id = ? )";
+
+        return jdbcTemplate.queryForList(sqlQuery, Long.TYPE, id);
+    }
+
+    @Override
     public void removeUserById(long userId) {
         if (findById(userId) == null) {
             throw new UserNotFoundException("User с id = " + userId + " не найден");

@@ -115,14 +115,15 @@ public class FilmDbStorageImpl implements FilmDbStorage {
     }
 
     @Override
-    public List<Film> getLikedFilms(long userId) {
+    public List<Film> findRecommendedFilms(long userId, long commonUserId) {
         String sqlQuery = "SELECT f.*, m.name AS mpa_name " +
                 "FROM films f " +
                 "LEFT JOIN mpas m ON f.rating_id = m.rating_id " +
                 "LEFT JOIN likes l ON l.film_id = f.film_id " +
-                "WHERE l.user_id = ? ";
+                "WHERE l.user_id = ? AND l.film_id NOT IN " +
+                "(SELECT film_id FROM likes WHERE user_id = ? )";
 
-        List<Film> films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, userId);
+        List<Film> films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, commonUserId, userId);
 
         return films.stream()
                 .peek(this::getOtherLinks)

@@ -12,10 +12,11 @@ import ru.yandex.practicum.filmorate.storage.db.FriendDbStorage;
 import ru.yandex.practicum.filmorate.storage.db.UserDbStorage;
 
 import javax.validation.Valid;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+
 
 @Slf4j
 @AllArgsConstructor
@@ -71,24 +72,16 @@ public class UserDbService {
     }
 
     public List<Film> findRecommendations(long id) {
-        List<User> users = getAll();
-        List<Film> userFilms = filmDbStorage.getLikedFilms(id);
-        HashMap<Long, Integer> counter = new HashMap<>();
+        findUserById(id);
 
-        for (User user : users) {
-            if (user.getId() != id) {
-                List<Film> userToFindFilms = filmDbStorage.getLikedFilms(user.getId());
-                userToFindFilms.retainAll(userFilms);
-                counter.put(user.getId(), userToFindFilms.size());
-            }
+        Set<Film> recommendations = new HashSet<>();
+        List<Long> commonUsersIds = userDbStorage.findCommonUsersIds(id);
+
+        for (Long commonUserId : commonUsersIds) {
+            recommendations.addAll(filmDbStorage.findRecommendedFilms(id, commonUserId));
         }
 
-        Long commonUserId = Collections.max(counter.entrySet(), Map.Entry.comparingByValue()).getKey();
-        List<Film> commonUserFilms = filmDbStorage.getLikedFilms(commonUserId);
-
-        commonUserFilms.removeAll(userFilms);
-
-        return commonUserFilms;
+        return new ArrayList<Film>(recommendations);
     }
 
 }

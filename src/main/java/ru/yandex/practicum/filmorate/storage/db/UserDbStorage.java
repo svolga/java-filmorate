@@ -11,5 +11,7 @@ public interface UserDbStorage extends AbstractStorage<User> {
 
     List<User> findCommonFriends(long id, long friendId);
 
+    List<Long> findCommonUsersIds(long id);
+
     void removeUserById(long userId);
 }
