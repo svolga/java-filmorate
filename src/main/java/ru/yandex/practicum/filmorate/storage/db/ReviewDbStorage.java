@@ -15,11 +15,11 @@ public interface ReviewDbStorage {
 
     List<Review> findAllReviews(int filmId, int count);
 
-    long likeReview(int userId, long id);
+    void likeReview(int userId, long id);
 
-    long dislikeReview(int userId, long id);
+    void dislikeReview(int userId, long id);
 
-    long removeLikeReview(int userId, long id);
+    void removeLikeReview(int userId, long id);
 
-    long removeDislikeReview(int userId, long id);
+    void removeDislikeReview(int userId, long id);
 }

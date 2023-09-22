@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
-import ru.yandex.practicum.filmorate.exception.ReviewNotFoundException;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.service.db.ReviewDbService;
 
@@ -35,14 +33,6 @@ public class ReviewController {
 
     @PostMapping
     public Review addReview(@Valid @RequestBody Review review) {
-        if (review.getUserId() < 0 || review.getFilmId() < 0) {
-            throw new ReviewNotFoundException(String.valueOf(review.getUserId()));
-        }
-
-        if (review.getUserId() == 0 || review.getFilmId() == 0 || review.getIsPositive() == null) {
-            throw new IncorrectParameterException("Не все поля заполнены");
-        }
-
         Review request = reviewDbService.createReview(review);
         log.debug("Добавление пользователем id = {} отзыва к фильму id = {}", review.getUserId(), review.getFilmId());
         return request;
@@ -84,30 +74,26 @@ public class ReviewController {
     }
 
     @PutMapping("{id}/like/{userId}")
-    public long likeReview(@PathVariable long id, @PathVariable int userId) {
-        long request = reviewDbService.likeReview(userId, id);
+    public void likeReview(@PathVariable long id, @PathVariable int userId) {
+        reviewDbService.likeReview(userId, id);
         log.debug("Пользователь id = {} поставил лайк отзыву id = {}", userId, id);
-        return request;
     }
 
     @PutMapping("{id}/dislike/{userId}")
-    public long dislikeReview(@PathVariable long id, @PathVariable int userId) {
-        long request = reviewDbService.dislikeReview(userId, id);
+    public void dislikeReview(@PathVariable long id, @PathVariable int userId) {
+        reviewDbService.dislikeReview(userId, id);
         log.debug("Пользователь id = {} поставил дизлайк отзыву id = {}", userId, id);
-        return request;
     }
 
     @DeleteMapping("{id}/like/{userId}")
-    public long deleteLikeReview(@PathVariable long id, @PathVariable int userId) {
-        long request = reviewDbService.removeLikeReview(userId, id);
+    public void deleteLikeReview(@PathVariable long id, @PathVariable int userId) {
+        reviewDbService.removeLikeReview(userId, id);
         log.debug("Пользователь id = {} удалил свой лайк отзыву id = {}", userId, id);
-        return request;
     }
 
     @DeleteMapping("{id}/dislike/{userId}")
-    public long deleteDislikeReview(@PathVariable long id, @PathVariable int userId) {
-        long request = reviewDbService.removeDislikeReview(userId, id);
+    public void deleteDislikeReview(@PathVariable long id, @PathVariable int userId) {
+        reviewDbService.removeDislikeReview(userId, id);
         log.debug("Пользователь id = {} удалил свой дизлайк отзыву id = {}", userId, id);
-        return request;
     }
 }
