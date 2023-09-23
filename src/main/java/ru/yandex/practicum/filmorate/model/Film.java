@@ -1,25 +1,24 @@
 package ru.yandex.practicum.filmorate.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.AllArgsConstructor;
-import lombok.Singular;
 import lombok.NonNull;
+import lombok.Singular;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import ru.yandex.practicum.filmorate.annotation.CustomAfterDate;
+import ru.yandex.practicum.filmorate.util.Const;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-import javax.validation.constraints.Min;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import ru.yandex.practicum.filmorate.util.Const;
 
 @Data
 @Builder
@@ -33,6 +32,8 @@ public class Film {
 
     private final Mpa mpa;
     private final List<Genre> genres = new ArrayList<>();
+    private final List<Director> directors = new ArrayList<>();
+    private final List<Review> reviews = new ArrayList<>();
 
     private long id;
 

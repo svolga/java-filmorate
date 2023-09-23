@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,9 +12,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
+import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.service.UserDbService;
-import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.service.db.EventDbService;
+import ru.yandex.practicum.filmorate.service.db.UserDbService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -21,16 +24,12 @@ import java.util.List;
 @RestController
 @Slf4j
 @Validated
+@AllArgsConstructor
 @RequestMapping("/users")
 public class UserController {
 
-    private final UserService userService;
     private final UserDbService userDbService;
-
-    public UserController(UserService userService, UserDbService userDbService) {
-        this.userService = userService;
-        this.userDbService = userDbService;
-    }
+    private final EventDbService eventDbService;
 
     @GetMapping
     public List<User> getAllUsers() {
@@ -48,6 +47,12 @@ public class UserController {
     public User updateUser(@Valid @RequestBody User user) throws ValidateException {
         log.info("Изменить пользователя --> {}", user);
         return userDbService.update(user);
+    }
+
+    @DeleteMapping("/{userId}")
+    public void removeUserById(@PathVariable long userId) {
+        log.info("Удалить пользователя с id --> {}", userId);
+        userDbService.removeUserById(userId);
     }
 
     @GetMapping("/{id}")
@@ -77,6 +82,18 @@ public class UserController {
     public List<User> findFriends(@PathVariable long id, @PathVariable long otherId) {
         log.info("Поиск общих друзей для пользователя с id -->{} и пользователя с otherId --> {}", id, otherId);
         return userDbService.findCommonFriends(id, otherId);
+    }
+
+    @GetMapping("/{id}/feed")
+    public List<Event> findEvents(@PathVariable long id) {
+        log.info("Поиск events для пользователя с id -->{}", id);
+        return eventDbService.findByUserId(id);
+    }
+
+    @GetMapping("/{id}/recommendations")
+    public List<Film> findRecommendations(@PathVariable long id) {
+        log.info("Вывод рекомендаций для пользователя с id -->{}", id);
+        return userDbService.findRecommendations(id);
     }
 
 }

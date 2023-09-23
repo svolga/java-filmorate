@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.service.FilmDbService;
+import ru.yandex.practicum.filmorate.service.db.FilmDbService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -22,13 +23,10 @@ import java.util.List;
 @Slf4j
 @Validated
 @RequestMapping("/films")
+@AllArgsConstructor
 public class FilmController {
 
     private final FilmDbService filmDbService;
-
-    public FilmController(FilmDbService filmDbService) {
-        this.filmDbService = filmDbService;
-    }
 
     @GetMapping
     public List<Film> getAllFilms() {
@@ -67,9 +65,38 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public List<Film> findAllPopular(@RequestParam(value = "count", defaultValue = "10", required = false) int count) {
+    public List<Film> findAllPopular(@RequestParam(value = "count", defaultValue = "10", required = false) int count,
+                                     @RequestParam(value = "genreId", required = false) Long genreId,
+                                     @RequestParam(value = "year", required = false) Integer year) {
         log.info("Получить {} популярных фильмов", count);
-        return filmDbService.findAllPopular(count);
+        return filmDbService.findAllPopular(count, genreId, year);
     }
 
+    @GetMapping("/common")
+    public List<Film> findCommonFilm(@RequestParam(value = "userId") long userId,
+                                     @RequestParam(value = "friendId") long friendId) {
+        log.info("Найти список общих фильмов у пользователей с id --> {} и с id --> {}.", userId, friendId);
+        return filmDbService.findCommonFilm(userId, friendId);
+    }
+
+    @GetMapping("/search")
+    public List<Film> findByTitleAndDirector(@RequestParam(value = "query") String query,
+                                             @RequestParam(value = "by") String by) {
+        log.info("Поиск -->{} фильма по названию и режисеру -->{} ", query, by);
+        return filmDbService.findByTitleAndDirector(query, by);
+    }
+
+    @GetMapping("/director/{directorId}")
+    public List<Film> findDirectorsFilms(@PathVariable long directorId,
+                                         @RequestParam(value = "sortBy") String sortBy) {
+        log.info("Получить список фильмов режисёра с id  --> {}", directorId);
+        return filmDbService.findDirectorsFilms(directorId, sortBy);
+    }
+
+    @DeleteMapping("/{filmId}")
+    public void removeFilmById(@PathVariable long filmId) {
+        log.info("Удалить фильм с id --> {}", filmId);
+        filmDbService.removeFilmById(filmId);
+    }
 }
+
